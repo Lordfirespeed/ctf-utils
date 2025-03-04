@@ -158,7 +158,9 @@ class PaddingOracleCracker:
         for index in range(self._number_of_ciphertext_blocks):
             block = self.crack_plaintext_block(index)
             plaintext.extend(block)
-        return plaintext
+
+        padding_length = plaintext[-1]
+        return plaintext[:-padding_length]
 
     def crack_plaintext_block(self, plaintext_block_index: int) -> bytes:
         partial_decryption = PartiallyCrackedBlock(
