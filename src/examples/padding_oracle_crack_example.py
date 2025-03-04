@@ -27,7 +27,7 @@ assert try_token(iv + ciphertext)
 def main():
     cracker = PaddingOracleCracker(iv, ciphertext, try_token)
     plaintext = cracker.crack_plaintext()
-    print(plaintext)
+    print(plaintext.decode("utf-8"))
 
 
 if __name__ == "__main__":
