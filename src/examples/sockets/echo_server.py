@@ -1,4 +1,5 @@
 import asyncio
+from pathlib import Path
 
 
 # https://docs.python.org/3/library/asyncio-stream.html#tcp-echo-server-using-streams
@@ -19,7 +20,7 @@ async def handle_echo(reader, writer):
 
 
 async def main():
-    server = await asyncio.start_server(handle_echo, '127.0.0.1', 8888)
+    server = await asyncio.start_unix_server(handle_echo, Path("/", "tmp", "echo-server.sock"))
 
     addrs = ', '.join(str(sock.getsockname()) for sock in server.sockets)
     print(f'Serving on {addrs}')

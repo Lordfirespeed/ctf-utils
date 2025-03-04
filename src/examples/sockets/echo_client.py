@@ -1,9 +1,10 @@
 import asyncio
+from pathlib import Path
 
 
 # https://docs.python.org/3/library/asyncio-stream.html#tcp-echo-client-using-streams
 async def tcp_echo_client(message):
-    reader, writer = await asyncio.open_connection('127.0.0.1', 8888)
+    reader, writer = await asyncio.open_unix_connection(Path("/", "tmp", "echo-server.sock"))
 
     print(f'Send: {message!r}')
     writer.write(message.encode())
