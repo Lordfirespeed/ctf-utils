@@ -1,5 +1,7 @@
 from typing import Callable, ClassVar, Generator
 
+from utils.reprint import Printer
+
 type PaddingOracle = Callable[[bytes], bool]
 
 
@@ -164,8 +166,9 @@ class PaddingOracleCracker:
             self._block_at(plaintext_block_index),
             self._ciphertext_block_at(plaintext_block_index),
         )
-        while not partial_decryption.is_complete():
-            partial_decryption.step_crack(self.oracle)
-            print(partial_decryption.render_progress())
+        with Printer() as printer:
+            while not partial_decryption.is_complete():
+                partial_decryption.step_crack(self.oracle)
+                printer(f"block {plaintext_block_index}: {partial_decryption.render_progress()}")
 
         return partial_decryption.known_plaintext
