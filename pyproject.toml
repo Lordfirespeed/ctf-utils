@@ -1,0 +1,5 @@
+[project]
+name = "ctf-utils"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []

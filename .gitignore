@@ -1,0 +1,31 @@
+# Exclude everything
+/*
+
+# Include specifically
+
+## Markdowns
+!*.md
+
+## Important Git files
+!.gitmodules
+!.gitignore
+!.gitattributes
+!.git-blame-ignore-revs
+
+## Package manager
+!pyproject.toml
+!.python-version
+
+## App configuration templates
+!.env.template
+
+## Sources
+!/src
+!/tests
+!/scripts
+
+## Python caches/compiled files
+__pycache__/
+*.py[oc]
+
+# Explicit exceptions/ignores
