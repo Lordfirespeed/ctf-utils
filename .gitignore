@@ -28,5 +28,6 @@
 ## Python caches/compiled files
 __pycache__/
 *.py[oc]
+*.egg-info
 
 # Explicit exceptions/ignores
