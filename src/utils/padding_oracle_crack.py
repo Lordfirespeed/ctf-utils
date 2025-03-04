@@ -81,7 +81,7 @@ class PartiallyCrackedBlock:
 
     def _render_byte_hex(self, byte_index: int) -> str:
         if byte_index < self.num_bytes_unknown:
-            return "__"
+            return "??"
         return self._known_plaintext[byte_index].to_bytes(length=1).hex()
 
     def _render_byte_ascii(self, byte_index: int) -> str:
@@ -100,9 +100,9 @@ class PartiallyCrackedBlock:
         return byte_char
 
     def render_progress(self) -> str:
-        hex_progress = " ".join(self._render_byte_hex(byte_index) for byte_index in range(self.block_length))
+        hex_progress = "_".join(self._render_byte_hex(byte_index) for byte_index in range(self.block_length))
         ascii_progress = "".join(self._render_byte_ascii(byte_index) for byte_index in range(self.block_length))
-        return f"{hex_progress} ({ascii_progress})"
+        return f"0x{hex_progress} ('{ascii_progress}')"
 
 
 class PaddingOracleCracker:
