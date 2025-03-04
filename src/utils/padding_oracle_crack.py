@@ -44,6 +44,39 @@ class PartiallyCrackedBlock:
         self._known_plaintext[last_unknown_byte_index] = new_known_byte_decryption ^ mask_byte
         self.num_bytes_known += 1
 
+    def step_crack(self, oracle: PaddingOracle) -> None:
+        assert not self.is_complete()
+
+        first_known_byte_index = self.num_bytes_unknown
+        last_unknown_byte_index = first_known_byte_index - 1
+
+        preceding_block = bytearray(self.preceding_ciphertext)
+        ciphertext_block = self.ciphertext
+
+        # spoof padding for known bytes
+        target_padding = self.num_bytes_known + 1
+        for byte_index in range(first_known_byte_index, self.block_length):
+            preceding_block[byte_index] = self.known_decryption[byte_index] ^ target_padding
+
+        # find a mutation which turns the last unknown byte into valid padding
+        for try_byte_value in range(256):
+            c1_prime = bytearray(preceding_block)
+            c1_prime[last_unknown_byte_index] = try_byte_value
+            if not oracle(c1_prime + ciphertext_block):
+                continue
+            if last_unknown_byte_index == 0:
+                break
+
+            c1_prime_prime = bytearray(c1_prime)
+            c1_prime_prime[last_unknown_byte_index - 1] ^= 1
+            assert c1_prime_prime != c1_prime
+            if oracle(c1_prime_prime + ciphertext_block):
+                break
+        else:
+            raise Exception("no value found")
+
+        self.update(c1_prime[last_unknown_byte_index] ^ target_padding)
+
 
 class PaddingOracleCracker:
     """
@@ -107,40 +140,7 @@ class PaddingOracleCracker:
             self._ciphertext_block_at(plaintext_block_index),
         )
         while not partial_decryption.is_complete():
-            self.step_crack_plaintext_block(partial_decryption)
+            partial_decryption.step_crack(self.oracle)
             print(partial_decryption.known_plaintext)
 
         return partial_decryption.known_plaintext
-
-    def step_crack_plaintext_block(self, partial_decryption: PartiallyCrackedBlock) -> None:
-        assert not partial_decryption.is_complete()
-
-        first_known_byte_index = partial_decryption.num_bytes_unknown
-        last_unknown_byte_index = first_known_byte_index - 1
-
-        preceding_block = bytearray(partial_decryption.preceding_ciphertext)
-        ciphertext_block = partial_decryption.ciphertext
-
-        # spoof padding for known bytes
-        target_padding = partial_decryption.num_bytes_known + 1
-        for byte_index in range(first_known_byte_index, self.block_length):
-            preceding_block[byte_index] = partial_decryption.known_decryption[byte_index] ^ target_padding
-
-        # find a mutation which turns the last unknown byte into valid padding
-        for try_byte_value in range(256):
-            c1_prime = bytearray(preceding_block)
-            c1_prime[last_unknown_byte_index] = try_byte_value
-            if not self.oracle(c1_prime + ciphertext_block):
-                continue
-            if last_unknown_byte_index == 0:
-                break
-
-            c1_prime_prime = bytearray(c1_prime)
-            c1_prime_prime[last_unknown_byte_index - 1] ^= 1
-            assert c1_prime_prime != c1_prime
-            if self.oracle(c1_prime_prime + ciphertext_block):
-                break
-        else:
-            raise Exception("no value found")
-
-        partial_decryption.update(c1_prime[last_unknown_byte_index] ^ target_padding)
