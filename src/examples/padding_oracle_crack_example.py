@@ -6,7 +6,7 @@ import requests
 from utils.padding_oracle_crack import PaddingOracleCracker
 
 
-my_token_base64 = urlunquote("VHUv2UJogqrllaEd%2BWBL1MD3VMPp5dDR7xYLPVZGxFxWaL33nPe%2BZonXouOs10i8")
+my_token_base64 = urlunquote("fCHta4KM9gOTBkQCGinmuuogytHDRrl%2F7g032l7VSOrVeH939p04HWFrP9Jrf%2B4CInfqkWjX1d8rS8o0HXP4rQ%3D%3D")
 my_token = base64.b64decode(my_token_base64)
 iv, ciphertext = bytearray(my_token[:16]), bytearray(my_token[16:])
 
