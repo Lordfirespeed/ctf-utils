@@ -77,6 +77,31 @@ class PartiallyCrackedBlock:
 
         self.update(c1_prime[last_unknown_byte_index] ^ target_padding)
 
+    def _render_byte_hex(self, byte_index: int) -> str:
+        if byte_index < self.num_bytes_unknown:
+            return "__"
+        return self._known_plaintext[byte_index].to_bytes(length=1).hex()
+
+    def _render_byte_ascii(self, byte_index: int) -> str:
+        if byte_index < self.num_bytes_unknown:
+            return "?"
+        byte_value = self._known_plaintext[byte_index]
+        if byte_value < 32 or 128 <= byte_value:
+            return u"\u21af"
+        byte_char = chr(byte_value)
+        if byte_char == "\n":
+            return u"\u240A"
+        if byte_char == "\r":
+            return u"\u240D"
+        if byte_char == "\t":
+            return u"\u21e5"
+        return byte_char
+
+    def render_progress(self) -> str:
+        hex_progress = " ".join(self._render_byte_hex(byte_index) for byte_index in range(self.block_length))
+        ascii_progress = "".join(self._render_byte_ascii(byte_index) for byte_index in range(self.block_length))
+        return f"{hex_progress} ({ascii_progress})"
+
 
 class PaddingOracleCracker:
     """
@@ -141,6 +166,6 @@ class PaddingOracleCracker:
         )
         while not partial_decryption.is_complete():
             partial_decryption.step_crack(self.oracle)
-            print(partial_decryption.known_plaintext)
+            print(partial_decryption.render_progress())
 
         return partial_decryption.known_plaintext
