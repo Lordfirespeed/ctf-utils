@@ -58,6 +58,10 @@ class Printer:
     def __call__(self, value: str, *, line_pos: int = None):
         if not self.alive:
             raise Exception("Printer has not been opened")
+        if line_pos is None and (self.line_count == 1):
+            line_pos = -1
+        if line_pos is None:
+            raise Exception("line position must be specified")
         if (line_pos // self.line_count) != -1:
             raise Exception("specified line position is out of range")
         self._move_to(line_pos)
