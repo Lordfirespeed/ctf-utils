@@ -171,8 +171,12 @@ class PaddingOracleCracker:
             self._ciphertext_block_at(plaintext_block_index),
         )
         with self.printer_factory() as printer:
+            def render_progress():
+                printer(f"block {plaintext_block_index}: {partial_decryption.render_progress()}")
+
+            render_progress()
             while not partial_decryption.is_complete():
                 partial_decryption.step_crack(self.oracle)
-                printer(f"block {plaintext_block_index}: {partial_decryption.render_progress()}")
+                render_progress()
 
         return partial_decryption.known_plaintext
