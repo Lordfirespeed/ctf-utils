@@ -2,8 +2,7 @@ from secrets import token_urlsafe
 import unittest
 
 from utils.padding_oracle_crack import PaddingOracleCracker
-
-from .simple_crypto import SimpleCrypto
+from utils.simple_crypto import SimpleCrypto
 
 
 class MyTestCase(unittest.TestCase):
