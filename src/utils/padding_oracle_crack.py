@@ -1,6 +1,6 @@
 from typing import Callable, ClassVar, Generator
 
-from utils.reprint import Printer
+from utils.reprint import Printer, NoOpPrinter
 
 type PaddingOracle = Callable[[bytes, bytes], bool]
 
@@ -128,7 +128,7 @@ class PaddingOracleCracker:
     block_length: ClassVar[int] = 16
     """Block length (in bytes) of the cipher being attacked"""
 
-    def __init__(self, iv: bytes, ciphertext: bytes, oracle: PaddingOracle) -> None:
+    def __init__(self, iv: bytes, ciphertext: bytes, oracle: PaddingOracle, *, render_progress: bool = True) -> None:
         assert len(iv) == self.block_length
         number_of_ciphertext_blocks, ciphertext_overflow_length = divmod(len(ciphertext), self.block_length)
         assert ciphertext_overflow_length == 0
@@ -138,6 +138,8 @@ class PaddingOracleCracker:
         self._number_of_ciphertext_blocks = number_of_ciphertext_blocks
 
         self.oracle = oracle
+
+        self.printer_factory = Printer if render_progress else NoOpPrinter
 
     def _block_at(self, index: int) -> bytes:
         if index == 0:
@@ -168,7 +170,7 @@ class PaddingOracleCracker:
             self._block_at(plaintext_block_index),
             self._ciphertext_block_at(plaintext_block_index),
         )
-        with Printer() as printer:
+        with self.printer_factory() as printer:
             while not partial_decryption.is_complete():
                 partial_decryption.step_crack(self.oracle)
                 printer(f"block {plaintext_block_index}: {partial_decryption.render_progress()}")
