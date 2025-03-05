@@ -2,7 +2,7 @@ from typing import Callable, ClassVar, Generator
 
 from utils.reprint import Printer
 
-type PaddingOracle = Callable[[bytes], bool]
+type PaddingOracle = Callable[[bytes, bytes], bool]
 
 
 class PartiallyCrackedBlock:
@@ -15,7 +15,7 @@ class PartiallyCrackedBlock:
         assert len(ciphertext_block) == block_length
 
         self.block_length = block_length
-        self.preceding_ciphertext = preceding_ciphertext_block 
+        self.preceding_ciphertext = preceding_ciphertext_block
         self.ciphertext = ciphertext_block
         self._known_decryption = bytearray(block_length)
         self._known_plaintext = bytearray(block_length)
@@ -64,7 +64,7 @@ class PartiallyCrackedBlock:
         for try_byte_value in range(256):
             c1_prime = bytearray(preceding_block)
             c1_prime[last_unknown_byte_index] = try_byte_value
-            if not oracle(c1_prime + ciphertext_block):
+            if not oracle(c1_prime, ciphertext_block):
                 continue
             if last_unknown_byte_index == 0:
                 break
@@ -72,7 +72,7 @@ class PartiallyCrackedBlock:
             c1_prime_prime = bytearray(c1_prime)
             c1_prime_prime[last_unknown_byte_index - 1] ^= 1
             assert c1_prime_prime != c1_prime
-            if oracle(c1_prime_prime + ciphertext_block):
+            if oracle(c1_prime_prime, ciphertext_block):
                 break
         else:
             raise Exception("no value found")
@@ -110,7 +110,7 @@ class PaddingOracleCracker:
     assume 128-bit blocks.
 
     -- modify penultimate block s.t. decryption of final byte is a padding byte --
-    for 'mod' values 0 through 256, 
+    for 'mod' values 0 through 256,
     set the last byte of C_0 = IV to 'mod' to construct C_0'
     try to decrypt C' = (C_0', C_1)
     If the padding is correct, the last byte of D(C_1) ^ C_0' is a padding byte (0x01...0x10)

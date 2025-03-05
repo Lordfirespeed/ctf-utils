@@ -11,8 +11,8 @@ my_token = base64.b64decode(my_token_base64)
 iv, ciphertext = bytearray(my_token[:16]), bytearray(my_token[16:])
 
 
-def try_token(token: bytes) -> bool:
-    token_base64 = base64.b64encode(token).decode("utf-8")
+def try_token(iv: bytes, ciphertext: bytes) -> bool:
+    token_base64 = base64.b64encode(iv + ciphertext).decode("utf-8")
     token_base64_urlencoded = urlquote(token_base64)
     response = requests.post(f"http://localhost:3000/api/submit/{token_base64_urlencoded}")
     body = response.json()
@@ -21,7 +21,7 @@ def try_token(token: bytes) -> bool:
     return False
 
 
-assert try_token(iv + ciphertext)
+assert try_token(iv, ciphertext)
 
 
 def main():
