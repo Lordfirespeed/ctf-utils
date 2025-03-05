@@ -1,4 +1,4 @@
-# The contents of this file are largely based upon 
+# The contents of this file are largely based upon
 # https://github.com/tqdm/tqdm/blob/0ed5d7f18fa3153834cbac0aa57e8092b217cc16/tqdm/tqdm.py
 # Copyright 2015-2024 (c) Casper da Costa-Luis
 # The referenced materials are licensed to Lordfirespeed under the terms of the MPL-2.0 license.
@@ -9,9 +9,10 @@ from typing import Never, Self
 from utils.types import Writable, SupportsWrite
 
 from .utils import disp_len
+from .printer_abc import PrinterABC
 
 
-class Printer:
+class Printer(PrinterABC):
     """
     Manage the printing and in-place updating of some lines of characters.
     """
