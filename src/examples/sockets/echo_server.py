@@ -22,7 +22,7 @@ async def handle_echo_uppercase(reader: StreamReader, writer: StreamWriter) -> N
     data = await reader.read(100)
     message = data.decode()
     print(f"Received {message!r}")
-    
+
     response = message.upper()
     print(f"Send: {response!r}")
     writer.write(response.encode())
