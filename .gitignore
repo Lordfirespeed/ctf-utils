@@ -3,6 +3,9 @@
 
 # Include specifically
 
+## Editorconfig
+!.editorconfig
+
 ## Markdowns
 !*.md
 
