@@ -1,3 +1,16 @@
+"""
+This example is a partial solution to a past CTF challenge:
+- 'Padding Gambit', Snyk Fetch the Flag 2025
+
+in the challenge, a Node.js server would
+- supply a 'token' (AES-128-CBC encrypted IV+ciphertext) via one endpoint
+- accept requests including the token via another endpoint
+
+since the latter endpoint would provide a different response depending on the validity
+of the provided token, it could be used to construct a 'padding oracle' which would allow
+decryption of the 'token' without knowledge of the encryption secret.
+"""
+
 import base64
 from urllib.parse import unquote_plus as urlunquote, quote_plus as urlquote
 
