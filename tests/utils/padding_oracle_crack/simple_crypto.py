@@ -17,21 +17,20 @@ class SimpleCrypto:
     def cipher_factory(self, iv: bytes) -> Cipher:
         return Cipher(self.algorithm, self.mode_factory(iv))
 
-    def encrypt(self, plaintext: bytes) -> bytes:
+    def encrypt(self, plaintext: bytes) -> tuple[bytes, bytes]:
         padder = self.padding.padder()
         padded_plaintext = padder.update(plaintext) + padder.finalize()
         iv = random_bytes(self.block_size_in_bytes)
         encryptor = self.cipher_factory(iv).encryptor()
         ciphertext = encryptor.update(padded_plaintext) + encryptor.finalize()
-        return iv + ciphertext
+        return iv, ciphertext
 
-    def decrypt(self, payload: bytes) -> bytes:
-        block_length, remainder = divmod(len(payload), self.block_size_in_bytes)
-        assert remainder == 0, "payload length should be a multiple of block size"
-        assert block_length >= 2, "payload should contain one IV block and at least one ciphertext block"
+    def decrypt(self, iv: bytes, ciphertext: bytes) -> bytes:
+        assert len(iv) == self.block_size_in_bytes, "IV size should match the block size"
+        block_length, remainder = divmod(len(ciphertext), self.block_size_in_bytes)
+        assert remainder == 0, "ciphertext size should be an exact multiple of block size"
+        assert block_length > 0, "ciphertext should contain at least one block"
 
-        iv = payload[:self.block_size_in_bytes]
-        ciphertext = payload[self.block_size_in_bytes:]
         decryptor = self.cipher_factory(iv).decryptor()
         padded_plaintext = decryptor.update(ciphertext) + decryptor.finalize()
         unpadder = self.padding.unpadder()
@@ -43,8 +42,8 @@ def main():
     my_crypto = SimpleCrypto()
 
     message = u"a secret message of arbitrary length"
-    encrypted_message = my_crypto.encrypt(message.encode("utf-8"))
-    round_trip_message = my_crypto.decrypt(encrypted_message).decode("utf-8")
+    iv, ciphertext = my_crypto.encrypt(message.encode("utf-8"))
+    round_trip_message = my_crypto.decrypt(iv, ciphertext).decode("utf-8")
     assert message == round_trip_message
 
 
