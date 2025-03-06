@@ -1,4 +1,5 @@
 import asyncio
+from contextlib import AsyncExitStack
 from typing import Awaitable, Callable, ClassVar, Generator
 
 from utils import asyncio_extras
@@ -171,10 +172,21 @@ class PaddingOracleCracker:
 
     async def crack_plaintext(self) -> bytearray:
         plaintext = bytearray()
-        with self.printer_factory(line_count=self._number_of_ciphertext_blocks) as printer:
+
+        futures: list[asyncio.Future[bytes]] = []
+        async with AsyncExitStack() as stack:
+            printer = self.printer_factory(line_count=self._number_of_ciphertext_blocks)
+            stack.enter_context(printer)
+            task_group = asyncio.TaskGroup()
+            await stack.enter_async_context(task_group)
+
             for index in range(self._number_of_ciphertext_blocks):
-                block = await self.crack_plaintext_block(index, printer)
-                plaintext.extend(block)
+                future = task_group.create_task(self.crack_plaintext_block(index, printer))
+                futures.append(future)
+
+        for future in futures:
+            block = future.result()
+            plaintext.extend(block)
 
         padding_length = plaintext[-1]
         return plaintext[:-padding_length]
