@@ -13,11 +13,14 @@ async def raising_wait(t):
     raise TimeoutError("You waited for too long, pal")
 
 
+time_scale = 0.5
+
+
 async def main():
     futures = {
-        wait(0.2),
-        raising_wait(1),
-        wait(2),
+        wait(time_scale * 3),
+        raising_wait(time_scale * 2),
+        wait(time_scale * 1),
     }
 
     result = await asyncio_extras.race_success(futures)
