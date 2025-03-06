@@ -1,12 +1,14 @@
 import asyncio
-from typing import Awaitable, Iterable
+from typing import Awaitable, Callable, Iterable
+
+from .state import has_succeeded
 
 
-async def race_success[T](awaitables: Iterable[Awaitable[T]]) -> T:
+async def race_predicate[T](predicate: Callable[[asyncio.Future[T]], bool], awaitables: Iterable[Awaitable[T]]) -> T:
     futures: set[asyncio.Future[T]] = set()
     async for future in asyncio.as_completed(awaitables):
         futures.add(future)
-        if future.cancelled() or future.exception() is not None:
+        if not predicate(future):
             continue
 
         result = await future
@@ -24,4 +26,8 @@ async def race_success[T](awaitables: Iterable[Awaitable[T]]) -> T:
     return result
 
 
-__all__ = ("race_success",)
+async def race_success[T](awaitables: Iterable[Awaitable[T]]) -> T:
+    return await race_predicate(has_succeeded, awaitables)
+
+
+__all__ = ("race_predicate", "race_success",)
