@@ -6,6 +6,9 @@ from utils.simple_crypto import SimpleCrypto
 
 
 crypto = SimpleCrypto()
+message = token_urlsafe()
+plaintext = message.encode("ascii")
+iv, ciphertext = crypto.encrypt(plaintext)
 
 
 async def oracle(iv: bytes, ciphertext: bytes) -> bool:
@@ -16,11 +19,6 @@ async def oracle(iv: bytes, ciphertext: bytes) -> bool:
     except (ValueError, AssertionError):
         return False
     return True
-
-
-message = token_urlsafe()
-plaintext = message.encode("ascii")
-iv, ciphertext = crypto.encrypt(plaintext)
 
 
 async def sanity_check():
