@@ -15,7 +15,7 @@ async def race_predicate[T](predicate: Callable[[asyncio.Future[T]], bool], awai
         break
     else:
         raise BaseExceptionGroup(
-            'no task completed successfully in asyncio_extras.race_success',
+            'no completed future was satisfactory in asyncio_extras.race_predicate',
             [task.exception() for task in futures]
         )
 
