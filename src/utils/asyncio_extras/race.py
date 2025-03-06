@@ -5,9 +5,8 @@ from .state import has_succeeded
 
 
 async def race_predicate[T](predicate: Callable[[asyncio.Future[T]], bool], awaitables: Iterable[Awaitable[T]]) -> T:
-    futures: set[asyncio.Future[T]] = set()
-    async for future in asyncio.as_completed(awaitables):
-        futures.add(future)
+    futures = {asyncio.ensure_future(awaitable) for awaitable in set(awaitables)}
+    async for future in asyncio.as_completed(futures):
         if not predicate(future):
             continue
 
