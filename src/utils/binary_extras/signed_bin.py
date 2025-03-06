@@ -12,4 +12,5 @@ def signed_bin(value: SupportsInt, binary_byte_length: int | None = None) -> str
     unsigned_value_integer = int.from_bytes(signed_value_bytes)
     return f"{unsigned_value_integer:0{binary_bit_length}b}"
 
+
 __all__ = ("signed_bin",)
