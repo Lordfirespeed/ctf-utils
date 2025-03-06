@@ -2,7 +2,7 @@ import asyncio
 from typing import Awaitable, Callable, ClassVar, Generator
 
 from utils import asyncio_extras
-from utils.reprint import Printer, NoOpPrinter
+from utils.reprint import PrinterABC, Printer, NoOpPrinter
 
 type PaddingOracle = Callable[[bytes, bytes], Awaitable[bool]]
 
@@ -171,26 +171,29 @@ class PaddingOracleCracker:
 
     async def crack_plaintext(self) -> bytearray:
         plaintext = bytearray()
-        for index in range(self._number_of_ciphertext_blocks):
-            block = await self.crack_plaintext_block(index)
-            plaintext.extend(block)
+        with self.printer_factory(line_count=self._number_of_ciphertext_blocks) as printer:
+            for index in range(self._number_of_ciphertext_blocks):
+                block = await self.crack_plaintext_block(index, printer)
+                plaintext.extend(block)
 
         padding_length = plaintext[-1]
         return plaintext[:-padding_length]
 
-    async def crack_plaintext_block(self, plaintext_block_index: int) -> bytes:
+    async def crack_plaintext_block(self, plaintext_block_index: int, printer: PrinterABC) -> bytes:
         partial_decryption = PartiallyCrackedBlock(
             self.block_length,
             self._block_at(plaintext_block_index),
             self._ciphertext_block_at(plaintext_block_index),
         )
-        with self.printer_factory() as printer:
-            def render_progress():
-                printer(f"block {plaintext_block_index}: {partial_decryption.render_progress()}")
+        def render_progress():
+            printer(
+                f"block {plaintext_block_index}: {partial_decryption.render_progress()}",
+                line_index=plaintext_block_index,
+            )
 
+        render_progress()
+        while not partial_decryption.is_complete():
+            await partial_decryption.step_crack(self.oracle)
             render_progress()
-            while not partial_decryption.is_complete():
-                await partial_decryption.step_crack(self.oracle)
-                render_progress()
 
         return partial_decryption.known_plaintext
