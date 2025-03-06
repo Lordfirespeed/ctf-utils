@@ -20,7 +20,7 @@ import aiohttp
 from utils.padding_oracle_crack import PaddingOracleCracker
 
 service_origin = "http://localhost:3000"
-# service_origin = "http://challenge.ctf.games:31283"
+# service_origin = "http://challenge.ctf.games:31283"  # from https://snyk.ctf.games/challenges
 
 
 async def get_token(session: aiohttp.ClientSession) -> (bytes, bytes):
