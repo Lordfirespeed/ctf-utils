@@ -1,8 +1,20 @@
+import asyncio
 from typing import Awaitable, Callable, ClassVar, Generator
 
+from utils import asyncio_extras
 from utils.reprint import Printer, NoOpPrinter
 
 type PaddingOracle = Callable[[bytes, bytes], Awaitable[bool]]
+
+
+class InsignificantResultException(Exception):
+    pass
+
+
+def is_significant(future: asyncio.Future) -> bool:
+    if future.cancelled(): return False
+    if isinstance(future.exception(), InsignificantResultException): return False
+    return True
 
 
 class PartiallyCrackedBlock:
@@ -61,23 +73,25 @@ class PartiallyCrackedBlock:
             preceding_block[byte_index] = self.known_decryption[byte_index] ^ target_padding
 
         # find a mutation which turns the last unknown byte into valid padding
-        for try_byte_value in range(256):
+        async def try_byte_value(value: int) -> int:
             c1_prime = bytearray(preceding_block)
-            c1_prime[last_unknown_byte_index] = try_byte_value
+            c1_prime[last_unknown_byte_index] = value
             if not await oracle(c1_prime, ciphertext_block):
-                continue
+                raise InsignificantResultException
             if last_unknown_byte_index == 0:
-                break
+                return value
 
-            c1_prime_prime = bytearray(c1_prime)
-            c1_prime_prime[last_unknown_byte_index - 1] ^= 1
-            assert c1_prime_prime != c1_prime
-            if await oracle(c1_prime_prime, ciphertext_block):
-                break
-        else:
-            raise Exception("no value found")
+            c1_prime[last_unknown_byte_index - 1] ^= 1
+            if not await oracle(c1_prime, ciphertext_block):
+                raise InsignificantResultException
+            return value
 
-        self.update(c1_prime[last_unknown_byte_index] ^ target_padding)
+        successful_byte_value = await asyncio_extras.race_predicate(
+            is_significant,
+            (try_byte_value(value) for value in range(256))
+        )
+
+        self.update(successful_byte_value ^ target_padding)
 
     def _render_byte_hex(self, byte_index: int) -> str:
         if byte_index < self.num_bytes_unknown:
