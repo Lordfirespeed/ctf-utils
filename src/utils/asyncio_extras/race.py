@@ -26,8 +26,12 @@ async def race_predicate[T](predicate: Callable[[asyncio.Future[T]], bool], awai
     return result
 
 
+async def race[T](awaitables: Iterable[Awaitable[T]]) -> T:
+    return await race_predicate(lambda _: True, awaitables)
+
+
 async def race_success[T](awaitables: Iterable[Awaitable[T]]) -> T:
     return await race_predicate(has_succeeded, awaitables)
 
 
-__all__ = ("race_predicate", "race_success",)
+__all__ = ("race", "race_predicate", "race_success",)
