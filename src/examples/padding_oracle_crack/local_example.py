@@ -1,6 +1,5 @@
 import asyncio
 from secrets import token_urlsafe
-from time import sleep
 
 from utils.padding_oracle_crack import PaddingOracleCracker
 from utils.simple_crypto import SimpleCrypto
@@ -11,7 +10,7 @@ crypto = SimpleCrypto()
 
 async def oracle(iv: bytes, ciphertext: bytes) -> bool:
     global crypto
-    sleep(0.0005)  # to simulate delay of e.g. performing HTTP request
+    await asyncio.sleep(0.0005)  # to simulate delay of e.g. performing HTTP request
     try:
         crypto.decrypt(iv, ciphertext)
     except (ValueError, AssertionError):
