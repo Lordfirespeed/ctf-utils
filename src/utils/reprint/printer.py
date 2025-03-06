@@ -56,18 +56,20 @@ class Printer(PrinterABC):
         if n < 0:
             self.writable.write('\x1b[A' * -n)  # move cursor up (ANSI escape)
 
-    def __call__(self, value: str, *, line_pos: int = None):
+    def __call__(self, value: str, *, line_index: int = None):
         if not self.alive:
             raise Exception("Printer has not been opened")
-        if line_pos is None and (self.line_count == 1):
-            line_pos = -1
-        if line_pos is None:
+        if line_index is None and (self.line_count == 1):
+            line_index = 0
+        if line_index is None:
             raise Exception("line position must be specified")
-        if (line_pos // self.line_count) != -1:
+        if line_index < 0 or self.line_count <= line_index:
             raise Exception("specified line position is out of range")
-        self._move_to(line_pos)
+
+        line_relative_position = -self.line_count + line_index
+        self._move_to(line_relative_position)
         self._print(value)
-        self._move_to(-line_pos)
+        self._move_to(-line_relative_position)
 
     def open(self) -> None:
         self.alive = True
