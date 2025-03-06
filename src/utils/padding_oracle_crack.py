@@ -1,8 +1,8 @@
-from typing import Callable, ClassVar, Generator
+from typing import Awaitable, Callable, ClassVar, Generator
 
 from utils.reprint import Printer, NoOpPrinter
 
-type PaddingOracle = Callable[[bytes, bytes], bool]
+type PaddingOracle = Callable[[bytes, bytes], Awaitable[bool]]
 
 
 class PartiallyCrackedBlock:
@@ -46,7 +46,7 @@ class PartiallyCrackedBlock:
         self._known_plaintext[last_unknown_byte_index] = new_known_byte_decryption ^ mask_byte
         self.num_bytes_known += 1
 
-    def step_crack(self, oracle: PaddingOracle) -> None:
+    async def step_crack(self, oracle: PaddingOracle) -> None:
         assert not self.is_complete()
 
         first_known_byte_index = self.num_bytes_unknown
@@ -64,7 +64,7 @@ class PartiallyCrackedBlock:
         for try_byte_value in range(256):
             c1_prime = bytearray(preceding_block)
             c1_prime[last_unknown_byte_index] = try_byte_value
-            if not oracle(c1_prime, ciphertext_block):
+            if not await oracle(c1_prime, ciphertext_block):
                 continue
             if last_unknown_byte_index == 0:
                 break
@@ -72,7 +72,7 @@ class PartiallyCrackedBlock:
             c1_prime_prime = bytearray(c1_prime)
             c1_prime_prime[last_unknown_byte_index - 1] ^= 1
             assert c1_prime_prime != c1_prime
-            if oracle(c1_prime_prime, ciphertext_block):
+            if await oracle(c1_prime_prime, ciphertext_block):
                 break
         else:
             raise Exception("no value found")
@@ -155,16 +155,16 @@ class PaddingOracleCracker:
         for index in range(self._number_of_ciphertext_blocks):
             yield self._ciphertext_block_at(index)
 
-    def crack_plaintext(self) -> bytearray:
+    async def crack_plaintext(self) -> bytearray:
         plaintext = bytearray()
         for index in range(self._number_of_ciphertext_blocks):
-            block = self.crack_plaintext_block(index)
+            block = await self.crack_plaintext_block(index)
             plaintext.extend(block)
 
         padding_length = plaintext[-1]
         return plaintext[:-padding_length]
 
-    def crack_plaintext_block(self, plaintext_block_index: int) -> bytes:
+    async def crack_plaintext_block(self, plaintext_block_index: int) -> bytes:
         partial_decryption = PartiallyCrackedBlock(
             self.block_length,
             self._block_at(plaintext_block_index),
@@ -176,7 +176,7 @@ class PaddingOracleCracker:
 
             render_progress()
             while not partial_decryption.is_complete():
-                partial_decryption.step_crack(self.oracle)
+                await partial_decryption.step_crack(self.oracle)
                 render_progress()
 
         return partial_decryption.known_plaintext
