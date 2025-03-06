@@ -4,7 +4,7 @@ from typing import Self
 
 class PrinterABC(ABC):
     @abstractmethod
-    def __call__(self, value: str) -> None:
+    def __call__(self, value: str, *, line_index: int = None) -> None:
         pass
 
     @abstractmethod
