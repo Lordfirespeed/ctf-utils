@@ -129,6 +129,7 @@ dependencies = [
     { name = "aiohttp" },
     { name = "cryptography" },
     { name = "numpy" },
+    { name = "ugrapheme" },
     { name = "wcwidth" },
 ]
 
@@ -137,6 +138,7 @@ requires-dist = [
     { name = "aiohttp", specifier = ">=3.11.13" },
     { name = "cryptography", specifier = ">=44.0.2" },
     { name = "numpy", specifier = ">=2.2.3" },
+    { name = "ugrapheme", specifier = ">=0.8" },
     { name = "wcwidth", specifier = ">=0.2.13" },
 ]
 
@@ -273,6 +275,39 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/1d/b2/31537cf4b1ca988837256c910a668b553fceb8f069bedc4b1c826024b52c/pycparser-2.22.tar.gz", hash = "sha256:491c8be9c040f5390f5bf44a5b07752bd07f56edf992381b05c701439eec10f6", size = 172736 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/13/a3/a812df4e2dd5696d1f351d58b8fe16a405b234ad2886a0dab9183fb78109/pycparser-2.22-py3-none-any.whl", hash = "sha256:c3702b6d3dd8c7abc1afa565d7e63d53a1d0bd86cdc24edd75470f4de499cfcc", size = 117552 },
+]
+
+[[package]]
+name = "ugrapheme"
+version = "0.8"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "uwcwidth" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/6d/8a/670a6c92c3014d67a8af24299c2ed72574cbeedf02ae9bb2180bb9265939/ugrapheme-0.8.tar.gz", hash = "sha256:57a5e8c4afb8b9cac18e5c4b662e6b0ba932cae87baab9577dd4c9423c443940", size = 56032 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/14/a8/7b2c8e465a29e96841d99ffc09bc3a33fc40edf43d89a7292503c8f4ecfd/ugrapheme-0.8-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:6ecf541f3029a9077c42ae3afb4c3b03bdd59dbb03a1acbaa9cee1ee0e52ed8b", size = 273108 },
+    { url = "https://files.pythonhosted.org/packages/90/96/c0b24450534fd1886c35bcc13fdffbcf69593d667a5d85bcb09610f17263/ugrapheme-0.8-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1e021fbe49084b73468f3f222a03e4bc96cffd35a0e23b5eaff93130de9b413f", size = 1569783 },
+    { url = "https://files.pythonhosted.org/packages/f8/97/9535eeaf93aeb5a1266dcffa9f681ac8161613adba88c1be6f216015f4f8/ugrapheme-0.8-cp313-cp313-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:90bdacbde8ee387ac8efd98fea0994238b4eb24f535ba535ddb37df4421921a4", size = 1486217 },
+    { url = "https://files.pythonhosted.org/packages/22/2c/b35e7ea523fcbb161d90075e01342ee51dd7984cd97b1e5c131a5ff41a00/ugrapheme-0.8-cp313-cp313-musllinux_1_2_i686.whl", hash = "sha256:41715c84eac300695bc5a93d90e46e2de229d9ea7d5c71e990270fd83e54d89d", size = 1516493 },
+    { url = "https://files.pythonhosted.org/packages/54/45/2e169e91ef3d52cb1202b6e720005e6a23acbc63c151808bdd3da7d89c46/ugrapheme-0.8-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:e89a5ef3dbe2d021be68cc5448b323654cf33dc998a468801d8038f26e0e99ca", size = 1560654 },
+    { url = "https://files.pythonhosted.org/packages/d6/62/a27a5ad82ae4b3744c2d7ae9f11d56cf697e148900b9d2469bfa32b893c0/ugrapheme-0.8-cp313-cp313-win32.whl", hash = "sha256:0473d50a8a45a5d0c0e683b7d5810bd5912e24faa6e04d3adb2242c12db719e1", size = 232165 },
+    { url = "https://files.pythonhosted.org/packages/ce/8d/ca79fdc4059ccc311d9b4e732ece5840f3789693448b6ccaaeacecf51925/ugrapheme-0.8-cp313-cp313-win_amd64.whl", hash = "sha256:619359156bd3f8dc29d587e8c0397cd71452866d6148314ca2a3329a61eb34b9", size = 258156 },
+]
+
+[[package]]
+name = "uwcwidth"
+version = "1.0.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/8c/23/2996ea167f0e4582a823914d913f68e11f31ded6d9e8fe1cf1c2e016313e/uwcwidth-1.0.0.tar.gz", hash = "sha256:da4731d9d593a2d05ae6a63e2516eac6552dcf81f8416d8fbf73eea810a3d774", size = 11911 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ca/26/d3c0beeb973129509dc5ce898f3b3f9ae1ae3c0b38e52c3b604774eeecb0/uwcwidth-1.0.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:63274c3f2e9a1cc09c94763b21527c504ca9625ffe5de0b6d62fc644efe7cf93", size = 30154 },
+    { url = "https://files.pythonhosted.org/packages/2c/be/ce10250a3058198ffaa2842ad6652b890265e40c28d266ebadb566951a02/uwcwidth-1.0.0-cp313-cp313-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:1e15cce70c8f63091929e7f1484f26d9c1acfa6b96d21cc7182eede1817a1a97", size = 126551 },
+    { url = "https://files.pythonhosted.org/packages/c2/0a/8473df847c15ce27f90e2e99a127dd9d8fb5f801f6b9e40d0dfdde611a60/uwcwidth-1.0.0-cp313-cp313-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b40db5a363ab567e508bd942c2da538fb23c58a51abac420a7dd1b23b7c8734e", size = 134213 },
+    { url = "https://files.pythonhosted.org/packages/f3/e4/c9bc007c58851ec8a0531fcc966226ce24910fc221bb31e826b6bb3c9f10/uwcwidth-1.0.0-cp313-cp313-musllinux_1_2_i686.whl", hash = "sha256:a3e6f0274bc136681f6b941eddfb1f9e301ffae634e7b9d7d22b0bcb49118a48", size = 124652 },
+    { url = "https://files.pythonhosted.org/packages/16/19/1ee954de6c2b5c1387351812b92cb306c2743bfc413abb05ab2acdf17e54/uwcwidth-1.0.0-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:d4f60280bdf8391a1696ba98a1b280e8a33da9852c6b62075efb6bb35ea2ab71", size = 132035 },
+    { url = "https://files.pythonhosted.org/packages/0a/33/a00b8e2d8840c66630ac4b1d09ee10bad6762bcd8470cab189236ccdd6f5/uwcwidth-1.0.0-cp313-cp313-win32.whl", hash = "sha256:972b481abf8ebf38b55ad80e7c34c8bdcac00015955b14b430770fe9290d2015", size = 27617 },
+    { url = "https://files.pythonhosted.org/packages/f6/3f/b0305562f7269210594eda4c77a0b29d5ba1f98895df649ca930dfd1d338/uwcwidth-1.0.0-cp313-cp313-win_amd64.whl", hash = "sha256:f343c485e5ad9e74aa5addf0484058104fa58b01013a9720a0835d7321ec3a3a", size = 29794 },
 ]
 
 [[package]]
