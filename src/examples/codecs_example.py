@@ -43,7 +43,7 @@ def use_registered_codec() -> None:
     print(f"{scream_encoded_bytes = }")
     scream_encoded = scream_encoded_bytes.decode("utf-8")
     print(f"{scream_encoded = }")
-    round_trip = codecs.decode(scream_encoded, "xkcd-scream")
+    round_trip = codecs.decode(scream_encoded_bytes, "xkcd-scream")
     print(f"{round_trip = }")
 
 
