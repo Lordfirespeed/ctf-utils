@@ -72,6 +72,7 @@ def _screamify(value: str) -> bytes:
 
 def _unscreamify(value: bytes | str) -> str:
     if isinstance(value, str):
+        value = normalise("NFC", value)
         value_bytes = bytearray(value, "utf-8")
     elif isinstance(value, bytes):
         value_bytes = bytearray(value)
@@ -88,6 +89,7 @@ def _unscreamify(value: bytes | str) -> str:
         ascii_character_bytes = ascii_character.encode("ascii")
         value_bytes[cursor:cursor+grapheme_byte_length] = ascii_character_bytes
         cursor += 1
+    print(value_bytes)
     return value_bytes.decode("ascii")
 
 
