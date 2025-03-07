@@ -34,8 +34,6 @@ accents_for_b_thru_y = (
     (u"\u0326",),  # Y
 )
 
-
-
 character_relation = (
     ("A", "A"),
     *((character, f"A{accent}") for character, accents in zip(ascii_uppercase_b_thru_y, accents_for_b_thru_y) for accent in accents),
