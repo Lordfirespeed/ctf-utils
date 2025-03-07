@@ -56,7 +56,7 @@ screamify_lookup = dict(normalised_character_relation)
 unscreamify_lookup = dict(normalised_character_relation_inverse)
 
 
-def screamify(value: str) -> str:
+def _screamify(value: str) -> bytes:
     input_bytes = bytearray(value, "ascii")
     cursor = 0
     for character in value:
@@ -67,11 +67,17 @@ def screamify(value: str) -> str:
         scream_assignment_bytes = scream_assignment.encode("utf-8")
         input_bytes[cursor:cursor+1] = scream_assignment_bytes
         cursor += len(scream_assignment_bytes)
-    return input_bytes.decode("utf-8")
+    return bytes(input_bytes)
 
 
-def unscreamify(value: str) -> str:
-    input_bytes = bytearray(value, "utf-8")
+def _unscreamify(value: bytes | str) -> str:
+    if isinstance(value, str):
+        value_bytes = bytearray(value, "utf-8")
+    elif isinstance(value, bytes):
+        value_bytes = bytearray(value)
+        value = value.decode("utf-8")
+    else:
+        raise ValueError
     cursor = 0
     for grapheme in graphemes(value):
         grapheme_byte_length = len(grapheme.encode("utf-8"))
@@ -80,17 +86,25 @@ def unscreamify(value: str) -> str:
             cursor += grapheme_byte_length
             continue
         ascii_character_bytes = ascii_character.encode("ascii")
-        input_bytes[cursor:cursor+grapheme_byte_length] = ascii_character_bytes
+        value_bytes[cursor:cursor+grapheme_byte_length] = ascii_character_bytes
         cursor += 1
-    return input_bytes.decode("ascii")
+    return value_bytes.decode("ascii")
+
+
+def screamify(value: str) -> str:
+    return _screamify(value).decode("utf-8")
+
+
+def unscreamify(value: str) -> str:
+    return _unscreamify(value)
 
 
 class XKCDScreamCodec(codecs.Codec):
-    def encode(self, value: str, errors ="strict") -> str:
-        return screamify(value)
+    def encode(self, value: str, errors ="strict") -> (bytes, int):
+        return _screamify(value), len(value)
 
-    def decode(self, value: str, errors ="strict") -> str:
-        return unscreamify(value)
+    def decode(self, value: bytes, errors ="strict") -> (str, int):
+        return _unscreamify(value), len(value)
 
 
 __all__ = ("XKCDScreamCodec", "screamify", "unscreamify",)
