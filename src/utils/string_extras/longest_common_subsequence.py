@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import functools
 
-from utils import colours
+from utils.colours import bright_magenta_foreground as pink, reset as style_reset
 
 
 @dataclass(frozen=True)
@@ -23,13 +23,13 @@ class CommonSubsequence:
         to_first_index = self.first_indexes[0]
         to_second_index = self.second_indexes[0]
         left_pad_to_length: int = max(to_first_index, to_second_index)
-        highlighted_character = f"{colours.pink}{self.content[0]}{colours.reset}"
+        highlighted_character = f"{pink}{self.content[0]}{style_reset}"
         cruft_of_first = self.of_first[:to_first_index]
         cruft_of_second = self.of_second[:to_second_index]
 
         segment_of_first = f"{cruft_of_first:^{left_pad_to_length}}{highlighted_character}"
         segment_of_second = f"{cruft_of_second:^{left_pad_to_length}}{highlighted_character}"
-        segment_of_pointer = f"{'':>{left_pad_to_length}}{colours.pink}^{colours.reset}"
+        segment_of_pointer = f"{'':>{left_pad_to_length}}{pink}^{style_reset}"
         return segment_of_first, segment_of_second, segment_of_pointer
 
     def _render_middle_segment(self, segment_index: int) -> (str, str, str):
@@ -39,13 +39,13 @@ class CommonSubsequence:
         to_first_index = self.first_indexes[segment_index]
         to_second_index = self.second_indexes[segment_index]
         left_pad_to_length: int = max(to_first_index - from_first_index, to_second_index - from_second_index)
-        highlighted_character = f"{colours.pink}{self.content[segment_index]}{colours.reset}"
+        highlighted_character = f"{pink}{self.content[segment_index]}{style_reset}"
         cruft_of_first = self.of_first[from_first_index:to_first_index]
         cruft_of_second = self.of_second[from_second_index:to_second_index]
 
         segment_of_first = f"{cruft_of_first:^{left_pad_to_length}}{highlighted_character}"
         segment_of_second = f"{cruft_of_second:^{left_pad_to_length}}{highlighted_character}"
-        segment_of_pointer = f"{'':>{left_pad_to_length}}{colours.pink}^{colours.reset}"
+        segment_of_pointer = f"{'':>{left_pad_to_length}}{pink}^{style_reset}"
         return segment_of_first, segment_of_second, segment_of_pointer
 
     def _render_final_segment(self) -> (str, str, str):

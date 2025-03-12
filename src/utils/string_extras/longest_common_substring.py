@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import functools
 
-from utils import colours
+from utils.colours import bright_magenta_foreground as pink, reset as style_reset
 
 
 @dataclass(frozen=True)
@@ -19,7 +19,7 @@ class CommonSubstring:
     def pretty_print(self):
         left_pad_to_length: int = max(self.first_index.start, self.second_index.start)
 
-        highlighted_substring = f"{colours.pink}{self.content}{colours.reset}"
+        highlighted_substring = f"{pink}{self.content}{style_reset}"
         start_of_first = self.of_first[:self.first_index.start]
         end_of_first = self.of_first[self.first_index.stop:]
         start_of_second = self.of_second[:self.second_index.start]
@@ -27,7 +27,7 @@ class CommonSubstring:
 
         print(f"{start_of_first:>{left_pad_to_length}}{highlighted_substring}{end_of_first}")
         print(f"{start_of_second:>{left_pad_to_length}}{highlighted_substring}{end_of_second}")
-        print(f"{'':>{left_pad_to_length}}{colours.pink}{'^' * len(self.content)}{colours.reset}")
+        print(f"{'':>{left_pad_to_length}}{pink}{'^' * len(self.content)}{style_reset}")
 
 
 @functools.cache
