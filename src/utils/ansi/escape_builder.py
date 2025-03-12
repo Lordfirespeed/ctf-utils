@@ -6,6 +6,7 @@ See
 from typing import ClassVar, Self, SupportsInt, override
 
 from .constants import *
+from .control_sequence_terminators import select_graphic_rendition
 
 
 class EscapeBuilder:
@@ -52,7 +53,7 @@ class EscapeBuilder:
 
 
 class StyleEscapeBuilder(EscapeBuilder):
-    terminator: ClassVar[bytes] = b"m"
+    terminator: ClassVar[bytes] = select_graphic_rendition.encode("ascii")
     """the terminator for all style-modifying escape codes."""
 
     @override
