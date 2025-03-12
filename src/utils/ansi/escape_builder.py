@@ -3,7 +3,7 @@ See
 - https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 - https://en.wikipedia.org/wiki/ANSI_escape_code#Control_Sequence_Introducer_commands
 """
-from typing import ClassVar, Self, override
+from typing import ClassVar, Self, SupportsInt, override
 
 from .constants import *
 
@@ -26,7 +26,8 @@ class EscapeBuilder:
     def _content(self) -> bytearray:
         return self._buffer[:self._cursor]
 
-    def argue(self, ordinal: int) -> Self:
+    def argue(self, ordinal: SupportsInt) -> Self:
+        ordinal = int(ordinal)
         assert ordinal >= 0
 
         if self._argument_count > 0:
@@ -46,7 +47,7 @@ class EscapeBuilder:
         return self._content().decode("ascii")
 
     @classmethod
-    def quick(cls, ordinal: int, terminator: bytes) -> str:
+    def quick(cls, ordinal: SupportsInt, terminator: bytes) -> str:
         return cls().argue(ordinal).finalize(terminator)
 
 
