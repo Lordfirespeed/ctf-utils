@@ -96,5 +96,8 @@ def main():
     result.pretty_print()
 
 
+__all__ = ("CommonSubstring", "longest_common_substring",)
+
+
 if __name__ == "__main__":
     main()

@@ -134,5 +134,8 @@ def main():
     result.pretty_print()
 
 
+__all__ = ("CommonSubsequence", "longest_common_subsequence",)
+
+
 if __name__ == "__main__":
     main()
