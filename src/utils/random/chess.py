@@ -10,7 +10,9 @@ from utils.ansi import StyleEscapeBuilder, StyleOrdinal
 from utils.ansi.styles import reset_all as style_reset
 
 
-type ChessPieceString = Literal["P"]
+type WhiteChessPieceString = Literal["P", "N", "B", "R", "Q", "K"]
+type BlackChessPieceString = Literal["p", "n", "b", "r", "q", "k"]
+type ChessPieceString = WhiteChessPieceString | BlackChessPieceString
 type ChessSquareInhabitant = ChessPieceString | None
 type ChessBoard = list[list[ChessSquareInhabitant]]
 type RankCoordinate = Literal[1, 2, 3, 4, 5, 6, 7, 8]
@@ -112,8 +114,22 @@ def is_file_coordinate(file_str: str) -> TypeGuard[FileCoordinate]:
     return "a" <= file_str <= "h"
 
 
+white_piece_str_set = set("PNBRQK")
+def is_white_chess_piece_string(piece_string: str) -> TypeGuard[WhiteChessPieceString]:
+    return piece_string in white_piece_str_set
+
+
+black_piece_str_set = set("pnbrqk")
+def is_black_chess_piece_string(piece_string: str) -> TypeGuard[BlackChessPieceString]:
+    return piece_string in black_piece_str_set
+
+
 def is_chess_piece_string(piece_string: str) -> TypeGuard[ChessPieceString]:
-    return piece_string == "P"
+    assert len(piece_string) == 1
+    if piece_string <= "Z":  # uppercase character ordinals are 65-90 (A-Z)
+        return is_white_chess_piece_string(piece_string)
+    else:
+        return is_black_chess_piece_string(piece_string)
 
 
 def parse_rank_notation(rank_notation_string: str) -> list[ChessSquareInhabitant]:
@@ -244,3 +260,8 @@ class ChessGamePosition:
 
     def pretty_print_board(self) -> None:
         print(self.pretty_render_board())
+
+
+__all__ = (
+    "ChessGamePosition",
+)
