@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import functools
 
-from utils.colours import bright_magenta_foreground as pink, reset as style_reset
+from utils.ansi.styles import bright_magenta_foreground as pink, reset_all as style_reset
 
 
 @dataclass(frozen=True)
