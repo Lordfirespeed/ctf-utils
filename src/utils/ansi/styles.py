@@ -3,7 +3,7 @@ See
 - https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 """
 from . import style_ordinals as ordinals
-from .style_escape_builder import StyleEscapeBuilder
+from .escape_builder import StyleEscapeBuilder
 
 
 def _b(ordinal: int) -> str:

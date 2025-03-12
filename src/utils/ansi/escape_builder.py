@@ -3,15 +3,12 @@ See
 - https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 - https://en.wikipedia.org/wiki/ANSI_escape_code#Control_Sequence_Introducer_commands
 """
-from typing import ClassVar, Self
+from typing import ClassVar, Self, override
 
 from .constants import *
 
 
-class StyleEscapeBuilder:
-    terminator: ClassVar[bytes] = b"m"
-    """the terminator for all style-modifying escape codes."""
-
+class EscapeBuilder:
     def __init__(self):
         self._buffer = bytearray(8)
         self._cursor = 0
@@ -44,13 +41,29 @@ class StyleEscapeBuilder:
         self._append_raw(str(ordinal).encode("ascii"))
         return self
 
-    def finalize(self) -> str:
-        self._append_raw(self.terminator)
+    def finalize(self, terminator: bytes) -> str:
+        self._append_raw(terminator)
         return self._content().decode("ascii")
 
     @classmethod
-    def quick(cls, ordinal: int) -> str:
+    def quick(cls, ordinal: int, terminator: bytes) -> str:
+        return cls().argue(ordinal).finalize(terminator)
+
+
+class StyleEscapeBuilder(EscapeBuilder):
+    terminator: ClassVar[bytes] = b"m"
+    """the terminator for all style-modifying escape codes."""
+
+    @override
+    def finalize(self, terminator: None = None) -> str:
+        assert terminator is None
+        return super().finalize(self.terminator)
+
+    @classmethod
+    @override
+    def quick(cls, ordinal: int, terminator: None = None) -> str:
+        assert terminator is None
         return cls().argue(ordinal).finalize()
 
 
-__all__ = ("StyleEscapeBuilder",)
+__all__ = ("EscapeBuilder", "StyleEscapeBuilder",)
