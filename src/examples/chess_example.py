@@ -23,7 +23,7 @@ from itertools import chain
 from typing import Iterable
 
 from utils.binary_extras import byte_length
-from utils.random import ChessGamePosition
+from utils.miscellaneous import ChessGamePosition
 
 
 game_state_notation = "1PPPP3/2P1P3/1P3PP1/1PPP1P2/1P3PP1/2PP2P1/2PP1P1P/2P1P2P w - - 0 1"
