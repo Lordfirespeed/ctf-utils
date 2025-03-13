@@ -53,7 +53,7 @@ class EscapeBuilder:
 
 
 class StyleEscapeBuilder(EscapeBuilder):
-    terminator: ClassVar[bytes] = select_graphic_rendition.encode("ascii")
+    terminator: ClassVar[bytes] = select_graphic_rendition
     """the terminator for all style-modifying escape codes."""
 
     @override

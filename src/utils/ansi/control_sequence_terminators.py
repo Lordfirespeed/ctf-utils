@@ -3,31 +3,33 @@ See
 - https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 - https://en.wikipedia.org/wiki/ANSI_escape_code#Control_Sequence_Introducer_commands
 """
-from enum import UNIQUE, StrEnum, verify
+from enum import UNIQUE, verify
+
+from utils.enum_extras import BytesEnum
 
 
 @verify(UNIQUE)
-class ControlSequenceTerminators(StrEnum):
+class ControlSequenceTerminators(BytesEnum):
     # region ANSI sequences
-    cursor_up = "A"
-    cursor_down = "B"
-    cursor_forward = "C"
-    cursor_back = "D"
-    cursor_next_line = "E"
-    cursor_previous_line = "F"
-    cursor_horizontal_absolute = "G"
-    cursor_position = "H"
-    erase_in_display = "J"
-    erase_in_line = "K"
-    scroll_up = "S"
-    scroll_down = "T"
-    horizontal_vertical_position = "f"  # similar to cursor_position; see Wikipedia
-    select_graphic_rendition = "m"
+    cursor_up = b"A"
+    cursor_down = b"B"
+    cursor_forward = b"C"
+    cursor_back = b"D"
+    cursor_next_line = b"E"
+    cursor_previous_line = b"F"
+    cursor_horizontal_absolute = b"G"
+    cursor_position = b"H"
+    erase_in_display = b"J"
+    erase_in_line = b"K"
+    scroll_up = b"S"
+    scroll_down = b"T"
+    horizontal_vertical_position = b"f"  # similar to cursor_position; see Wikipedia
+    select_graphic_rendition = b"m"
     # endregion
 
     # region popular private sequences
-    save_current_cursor_position = "s"
-    restore_saved_cursor_position = "u"
+    save_current_cursor_position = b"s"
+    restore_saved_cursor_position = b"u"
     # endregion
 
 
