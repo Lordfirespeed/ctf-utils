@@ -6,7 +6,7 @@ from typing import (
 
 from numpy import integer
 
-from utils.types import BytesLike
+from utils.typedefs import BytesLike
 
 
 def last_set_bit_index(binary: SupportsInt | BytesLike) -> int | Literal[-1]:

@@ -8,7 +8,7 @@ from typing import Never, Self
 
 from utils.ansi import EscapeBuilder
 from utils.ansi.control_sequence_terminators import cursor_up, cursor_down
-from utils.types import Writable, SupportsWrite
+from utils.typedefs import Writable, SupportsWrite
 
 from .utils import disp_len
 from .printer_abc import PrinterABC

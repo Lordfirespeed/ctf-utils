@@ -18,7 +18,7 @@ from typing import (
 
 from numpy import dtype, ndarray, uint64, zeros as array_of_zeros
 
-from utils.types import SupportsBool
+from utils.typedefs import SupportsBool
 
 from .bit_twiddling import (
     first_set_bit_index, last_set_bit_index,
