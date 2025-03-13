@@ -3,6 +3,7 @@ from contextlib import AsyncExitStack
 from typing import Awaitable, Callable, ClassVar, Generator
 
 from utils import asyncio_extras
+from utils.code_highlight import code_highlight
 from utils.reprint import PrinterABC, Printer, NoOpPrinter
 
 type PaddingOracle = Callable[[bytes, bytes], Awaitable[bool]]
@@ -115,9 +116,10 @@ class PartiallyCrackedBlock:
         return byte_char
 
     def render_progress(self) -> str:
-        hex_progress = "_".join(self._render_byte_hex(byte_index) for byte_index in range(self.block_length))
+        hex_progress = " ".join(self._render_byte_hex(byte_index) for byte_index in range(self.block_length))
         ascii_progress = "".join(self._render_byte_ascii(byte_index) for byte_index in range(self.block_length))
-        return f"0x{hex_progress} ('{ascii_progress}')"
+
+        return code_highlight(f"bytes.fromhex({hex_progress!r}) ({ascii_progress!r})")
 
 
 class PaddingOracleCracker:
