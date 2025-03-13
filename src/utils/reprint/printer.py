@@ -6,6 +6,8 @@
 import sys
 from typing import Never, Self
 
+from utils.ansi import EscapeBuilder
+from utils.ansi.control_sequence_terminators import cursor_up, cursor_down
 from utils.types import Writable, SupportsWrite
 
 from .utils import disp_len
@@ -46,15 +48,29 @@ class Printer(PrinterABC):
         self._write(f"\r{value}{padding}")
         self.last_len = len_value
 
-    def _move_to(self, n: int | None) -> None:
+    def _move_cursor_relatively(self, n: int | None) -> None:
         if n is None:
             return
         if n == 0:
             return
+        if n > 5:
+            # use control sequence to save bytes written
+            control_sequence = EscapeBuilder() \
+                .argue(n) \
+                .finalize(cursor_down)
+            # including content (the `\r`) is necessary, otherwise the cursor won't move onto the blank line
+            self.writable.write(control_sequence + "\r")
+            return
         if n > 0:
-            self.writable.write('\n' * n)  # move cursor down (print newlines)
+            # move cursor down by n lines using only newlines
+            self.writable.write("\n" * n)
+            return
         if n < 0:
-            self.writable.write('\x1b[A' * -n)  # move cursor up (ANSI escape)
+            control_sequence = EscapeBuilder() \
+                .argue(-n) \
+                .finalize(cursor_up)
+            self.writable.write(control_sequence)
+            return
 
     def __call__(self, value: str, *, line_index: int = None):
         if not self.alive:
@@ -67,9 +83,9 @@ class Printer(PrinterABC):
             raise Exception("specified line position is out of range")
 
         line_relative_position = -self.line_count + line_index
-        self._move_to(line_relative_position)
+        self._move_cursor_relatively(line_relative_position)
         self._print(value)
-        self._move_to(-line_relative_position)
+        self._move_cursor_relatively(-line_relative_position)
 
     def open(self) -> None:
         self.alive = True
