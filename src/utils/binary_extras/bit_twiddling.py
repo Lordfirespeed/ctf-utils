@@ -31,6 +31,7 @@ def last_set_bit_index(binary: SupportsIndex | BytesLike) -> int | Literal[-1]:
         return -1
 
     # bit-hack to create a bit-mask of exactly 1 '1' bit, in the position of the right-most '1' bit from 'binary'
+    # https://stackoverflow.com/a/63552117/11045433
     highest_bit_mask = binary & -binary
 
     return highest_bit_mask.bit_length() - 1
