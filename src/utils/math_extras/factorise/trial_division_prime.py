@@ -1,9 +1,8 @@
-from math import isqrt
-
+from utils.math_extras.isqrt import isqrt_floor
 from utils.typedefs.factorise import *
 
 
-def trial_division_prime_factorise(n: int) -> PrimeFactorisation:
+def _trial_division_prime_factorise(n: int, from_trial: int = 2) -> PrimeFactorisation:
     """
     Factorise an integer into its prime factors using the trial division algorithm.
     """
@@ -13,15 +12,19 @@ def trial_division_prime_factorise(n: int) -> PrimeFactorisation:
         return {}
     if n <= 3:
         return {n: 1}
-    for trial in range(2, isqrt(n) + 1):
+    for trial in range(from_trial, isqrt_floor(n) + 1):
         new_n, remainder = divmod(n, trial)
         if remainder != 0:
             continue
-        factorisation = trial_division_prime_factorise(new_n)
+        factorisation = _trial_division_prime_factorise(new_n, trial)
         trial_exponent = factorisation.get(trial, 0)
         factorisation[trial] = trial_exponent + 1
         return factorisation
     return {n: 1}
+
+
+def trial_division_prime_factorise(n: int) -> PrimeFactorisation:
+    return _trial_division_prime_factorise(n)
 
 
 __all__ = ("trial_division_prime_factorise",)
