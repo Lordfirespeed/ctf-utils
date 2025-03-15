@@ -1,6 +1,9 @@
+from operator import index
 from typing import (
     Literal,
-    SupportsInt,
+    # prefer SupportsIndex to SupportsInt as this prevents overleazous type coercion
+    # e.g. index(float) -> TypeError
+    SupportsIndex,
     overload,
 )
 
@@ -9,14 +12,18 @@ from numpy import integer
 from utils.typedefs import BytesLike
 
 
-def last_set_bit_index(binary: SupportsInt | BytesLike) -> int | Literal[-1]:
+def count_trailing_zeroes(binary: SupportsIndex | BytesLike):
+    return last_set_bit_index(binary)
+
+
+def last_set_bit_index(binary: SupportsIndex | BytesLike) -> int | Literal[-1]:
     """
     Compute the index (from the right) of the right-most '1' bit in 'binary'.
     For integer powers of 2, this computes log_2(binary).
     If there exists no index (because the input contains no set bits), returns -1.
     """
-    if isinstance(binary, SupportsInt):
-        binary = int(binary)
+    if isinstance(binary, SupportsIndex):
+        binary = index(binary)
     if type(binary) is not int:
         binary = int.from_bytes(binary, byteorder="big")
 
@@ -29,13 +36,13 @@ def last_set_bit_index(binary: SupportsInt | BytesLike) -> int | Literal[-1]:
     return highest_bit_mask.bit_length() - 1
 
 
-def first_set_bit_index(binary: SupportsInt | BytesLike) -> int | Literal[-1]:
+def first_set_bit_index(binary: SupportsIndex | BytesLike) -> int | Literal[-1]:
     """
     Compute the index (from the right) of the left-most '1' bit in 'binary'.
     If there exists no index (because the input contains no set bits), returns -1.
     """
-    if isinstance(binary, SupportsInt):
-        binary = int(binary)
+    if isinstance(binary, SupportsIndex):
+        binary = index(binary)
     if type(binary) is not int:
         binary = int.from_bytes(binary, byteorder="big")
 
