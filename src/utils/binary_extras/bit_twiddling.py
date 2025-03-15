@@ -79,6 +79,7 @@ def circular_right_shift(value, shift, width):
 
 
 __all__ = (
+    "count_trailing_zeroes",
     "last_set_bit_index",
     "first_set_bit_index",
     "circular_left_shift",
