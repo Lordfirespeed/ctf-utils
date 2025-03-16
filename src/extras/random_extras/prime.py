@@ -7,20 +7,18 @@ def prime_randint_of_bit_length(k: int) -> int:
     """Return a random non-negative prime integer with exactly `k` bits."""
     while True:
         candidate = randint_of_bit_length(k)
-        if not probable_prime(candidate):
-            continue
-        return candidate
-    raise Exception
+        if probable_prime(candidate):
+            break
+    return candidate
 
 
 def prime_randint_of_digit_length(k: int) -> int:
     """Return a random non-negative prime integer with exactly `k` digits."""
     while True:
         candidate = randint_of_digit_length(k)
-        if not probable_prime(candidate):
-            continue
-        return candidate
-    raise Exception
+        if probable_prime(candidate):
+            break
+    return candidate
 
 
 __all__ = (
