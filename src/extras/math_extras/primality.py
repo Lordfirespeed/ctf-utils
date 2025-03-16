@@ -1,7 +1,7 @@
 from random import randrange
 from typing import NamedTuple
 
-from utils.binary_extras import count_trailing_zeroes
+from extras.binary_extras import count_trailing_zeroes
 
 
 class TwoFactorisation(NamedTuple):

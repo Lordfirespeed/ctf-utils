@@ -1,8 +1,6 @@
 import unittest
 
-from numpy.ma.core import round_
-
-from utils.codecs_extras.xkcd_scream import screamify, unscreamify
+from extras.codecs_extras.xkcd_scream import screamify, unscreamify
 
 
 class XKCDScreamTests(unittest.TestCase):

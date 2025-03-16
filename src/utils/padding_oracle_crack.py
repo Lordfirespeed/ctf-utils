@@ -2,7 +2,7 @@ import asyncio
 from contextlib import AsyncExitStack
 from typing import Awaitable, Callable, ClassVar, Generator
 
-from utils import asyncio_extras
+from extras import asyncio_extras
 from utils.code_highlight import code_highlight
 from utils.reprint import PrinterABC, Printer, NoOpPrinter
 

@@ -7,7 +7,7 @@ Particularly:
 """
 import codecs
 
-from utils.codecs_extras import XKCDScreamCodec
+from extras.codecs_extras import XKCDScreamCodec
 
 
 def mix_codecs() -> None:

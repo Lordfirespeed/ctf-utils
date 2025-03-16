@@ -1,4 +1,4 @@
-from utils.math_extras.primality import miller_rabin_primality_test as probable_prime
+from extras.math_extras.primality import miller_rabin_primality_test as probable_prime
 
 from .specific_length import randint_of_bit_length, randint_of_digit_length
 

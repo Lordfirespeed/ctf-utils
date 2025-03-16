@@ -3,7 +3,7 @@ from operator import index
 from random import randrange
 from typing import SupportsIndex
 
-from utils.math_extras.extended_euclidian_algorithm import extended_euclidian_algorithm
+from extras.math_extras.extended_euclidian_algorithm import extended_euclidian_algorithm
 from utils.typedefs.factorise import *
 
 

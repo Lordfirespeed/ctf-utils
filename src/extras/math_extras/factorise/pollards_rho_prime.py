@@ -1,4 +1,4 @@
-from utils.math_extras.primality import miller_rabin_primality_test
+from extras.math_extras.primality import miller_rabin_primality_test
 from utils.typedefs.factorise import *
 
 from .lib import combine_factors_left

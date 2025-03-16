@@ -1,4 +1,4 @@
-from utils.math_extras.isqrt import isqrt_floor
+from extras.math_extras.isqrt import isqrt_floor
 from utils.typedefs.factorise import *
 
 

@@ -5,7 +5,7 @@ See
 """
 from enum import UNIQUE, verify
 
-from utils.enum_extras import BytesEnum
+from extras.enum_extras import BytesEnum
 
 
 @verify(UNIQUE)

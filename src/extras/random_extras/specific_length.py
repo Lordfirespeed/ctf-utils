@@ -1,4 +1,4 @@
-from utils.random_extras.sysrandom import randrange, getrandbits
+from extras.random_extras.sysrandom import randrange, getrandbits
 
 
 def randint_of_bit_length(k: int) -> int:

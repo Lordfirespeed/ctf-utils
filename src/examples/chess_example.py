@@ -22,7 +22,7 @@ Players had to
 from itertools import chain
 from typing import Iterable
 
-from utils.binary_extras import byte_length
+from extras.binary_extras import byte_length
 from utils.miscellaneous import ChessGamePosition
 
 
