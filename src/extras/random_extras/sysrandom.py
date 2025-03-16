@@ -25,6 +25,14 @@ getrandbits = _inst.getrandbits
 randbytes = _inst.randbytes
 
 
+# copied from python stdlib `secrets.py`
+def randbelow(exclusive_upper_bound):
+    """Return a random int in the interval [0, n)."""
+    if exclusive_upper_bound <= 0:
+        raise ValueError("Upper bound must be positive.")
+    return _inst._randbelow(exclusive_upper_bound)
+
+
 __all__ = (
     "betavariate",
     "binomialvariate",
@@ -40,6 +48,7 @@ __all__ = (
     "randbytes",
     "randint",
     "random",
+    "randbelow",
     "randrange",
     "sample",
     "shuffle",
