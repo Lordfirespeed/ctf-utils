@@ -2,6 +2,20 @@ from extras.math_extras import extended_euclidian_algorithm
 from extras.random_extras.sysrandom import randbelow
 
 
+def make_coprime(value: int, candidate: int) -> int:
+    """Return an integer co-prime to `value` which may be trivial, depending on `candidate`"""
+    while True:
+        if candidate == 1:
+            break
+
+        gcd = extended_euclidian_algorithm(candidate, value).gcd
+        if gcd == 1:
+            break
+
+        candidate //= gcd
+    return candidate
+
+
 def randint_coprime_to(value: int) -> int:
     """Return a random integer (non-trivially) co-prime to `value`."""
     if value <= 2:
@@ -10,24 +24,11 @@ def randint_coprime_to(value: int) -> int:
         # similar argument for 1, 2
         raise ValueError
 
-    def make_coprime(trial_value: int) -> int:
-        """Return an integer co-prime to `value` which may be trivial, depending on `trial_value`"""
-        while True:
-            if trial_value == 1:
-                break
-
-            gcd = extended_euclidian_algorithm(trial_value, value).gcd
-            if gcd == 1:
-                break
-
-            trial_value //= gcd
-        return trial_value
-
     while True:
         candidate = randbelow(value)
         if candidate == 0:
             continue
-        candidate = make_coprime(candidate)
+        candidate = make_coprime(value, candidate)
         if candidate != 1:
             break
 
