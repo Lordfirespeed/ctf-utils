@@ -1,4 +1,5 @@
-from extras.math_extras import extended_euclidian_algorithm
+from math import gcd
+
 from extras.random_extras.sysrandom import randbelow
 
 
@@ -8,11 +9,11 @@ def make_coprime(value: int, candidate: int) -> int:
         if candidate == 1:
             break
 
-        gcd = extended_euclidian_algorithm(candidate, value).gcd
-        if gcd == 1:
+        divisor = gcd(candidate, value)
+        if divisor == 1:
             break
 
-        candidate //= gcd
+        candidate //= divisor
     return candidate
 
 
