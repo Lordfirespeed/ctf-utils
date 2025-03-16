@@ -32,6 +32,10 @@ def miller_rabin_primality_test(value: int, round_count=2) -> bool:
         return True
 
     s, d = factor_out_powers_of_two(value - 1)
+    if s == 0:
+        # if `value - 1` is odd, `value` is even and therefore not prime
+        return False
+
     for _ in range(round_count):
         a = randrange(2, value - 1)
         x = pow(a, d, mod=value)
