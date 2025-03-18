@@ -72,4 +72,4 @@ def gen_params(prime_digit_length: int = 68) -> DSAParams:
     return determine_params(prime_p, prime_q)
 
 
-__all__ = ("DSAParams", "gen_params",)
+__all__ = ("DSAParams", "gen_params", "determine_params",)
