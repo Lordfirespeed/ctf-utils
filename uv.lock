@@ -129,6 +129,7 @@ dependencies = [
     { name = "aiohttp" },
     { name = "cryptography" },
     { name = "numpy" },
+    { name = "pyasn1" },
     { name = "pygments" },
     { name = "ugrapheme" },
     { name = "wcwidth" },
@@ -139,6 +140,7 @@ requires-dist = [
     { name = "aiohttp", specifier = ">=3.11.13" },
     { name = "cryptography", specifier = ">=44.0.2" },
     { name = "numpy", specifier = ">=2.2.3" },
+    { name = "pyasn1", specifier = ">=0.6.1" },
     { name = "pygments", specifier = ">=2.19.1" },
     { name = "ugrapheme", specifier = ">=0.8" },
     { name = "wcwidth", specifier = ">=0.2.13" },
@@ -268,6 +270,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/42/78/9432542a35d944abeca9e02927a0de38cd7a298466d8ffa171536e2381c3/propcache-0.3.0-cp313-cp313t-win32.whl", hash = "sha256:0c3e893c4464ebd751b44ae76c12c5f5c1e4f6cbd6fbf67e3783cd93ad221863", size = 42252 },
     { url = "https://files.pythonhosted.org/packages/6f/45/960365f4f8978f48ebb56b1127adf33a49f2e69ecd46ac1f46d6cf78a79d/propcache-0.3.0-cp313-cp313t-win_amd64.whl", hash = "sha256:75e872573220d1ee2305b35c9813626e620768248425f58798413e9c39741f46", size = 46425 },
     { url = "https://files.pythonhosted.org/packages/b5/35/6c4c6fc8774a9e3629cd750dc24a7a4fb090a25ccd5c3246d127b70f9e22/propcache-0.3.0-py3-none-any.whl", hash = "sha256:67dda3c7325691c2081510e92c561f465ba61b975f481735aefdfc845d2cd043", size = 12101 },
+]
+
+[[package]]
+name = "pyasn1"
+version = "0.6.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ba/e9/01f1a64245b89f039897cb0130016d79f77d52669aae6ee7b159a6c4c018/pyasn1-0.6.1.tar.gz", hash = "sha256:6f580d2bdd84365380830acf45550f2511469f673cb4a5ae3857a3170128b034", size = 145322 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c8/f1/d6a797abb14f6283c0ddff96bbdd46937f64122b8c925cab503dd37f8214/pyasn1-0.6.1-py3-none-any.whl", hash = "sha256:0d632f46f2ba09143da3a8afe9e33fb6f92fa2320ab7e886e2d0f7672af84629", size = 83135 },
 ]
 
 [[package]]
