@@ -2,8 +2,7 @@ from typing import Callable
 
 from extras.random_extras.sysrandom import randrange
 from toy_cryptography.plain_rsa_signatures import signature_for, verify_signature
-
-from .keys import *
+from toy_cryptography.plain_rsa_signatures.keys import *
 
 
 type SigningOracle = Callable[[int], int]

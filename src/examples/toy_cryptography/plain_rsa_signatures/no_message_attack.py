@@ -1,7 +1,6 @@
 from extras.random_extras.sysrandom import getrandbits
 from toy_cryptography.plain_rsa_signatures import verify_signature
-
-from .keys import *
+from toy_cryptography.plain_rsa_signatures.keys import *
 
 
 def adversary(key: RSAPublicKey) -> (int, int):
