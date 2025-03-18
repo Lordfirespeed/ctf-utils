@@ -30,7 +30,7 @@ class DSAParamsSchema(Sequence):
 def load_pem_dsa_parameters(parameters_file: Path) -> DSAParams:
     """
     ```bash
-    openssl genpkey -genparam -algorithm dsa -out params.pem
+    openssl genpkey -genparam -algorithm dsa -out dsaparams.pem
     ```
     """
     with open(parameters_file, "rb") as parameters_file_handle:

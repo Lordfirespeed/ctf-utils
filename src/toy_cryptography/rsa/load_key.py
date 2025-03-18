@@ -11,7 +11,7 @@ from .keys import RSAPrivateKey
 def load_pem_rsa_private_key(key_file: Path) -> RSAPrivateKey:
     """
     ```bash
-    openssl genpkey -algorithm rsa -out key.pem
+    openssl genpkey -algorithm rsa -out rsakey.pem
     ```
     """
     with open(key_file, "rb") as parameters_file_handle:
