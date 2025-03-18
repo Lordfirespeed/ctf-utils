@@ -42,4 +42,4 @@ def gen_private_key(params: DSAParams) -> DSAPrivateKey:
     )
 
 
-__all__ = ("DSAPrivateKey", "gen_private_key",)
+__all__ = ("DSAPublicKey", "DSAPrivateKey", "gen_private_key",)
