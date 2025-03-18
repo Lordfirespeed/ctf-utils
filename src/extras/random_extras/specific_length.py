@@ -13,7 +13,7 @@ def randint_of_digit_length(k: int) -> int:
     Return a random non-negative integer with exactly `k` digits.
     Note the first digit is technically 'less random' than the other digits, as it can't be zero.
     """
-    lower_bound = pow(10, k)
+    lower_bound = pow(10, k-1)
     upper_bound = lower_bound * 10
     return randrange(lower_bound, upper_bound)
 
