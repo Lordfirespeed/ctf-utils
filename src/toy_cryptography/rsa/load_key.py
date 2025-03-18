@@ -8,13 +8,13 @@ from cryptography.hazmat.primitives.asymmetric import rsa as pyca_rsa
 from .keys import RSAPrivateKey
 
 
-def load_pem_rsa_private_key(parameters_file: Path) -> RSAPrivateKey:
+def load_pem_rsa_private_key(key_file: Path) -> RSAPrivateKey:
     """
     ```bash
     openssl genpkey -algorithm rsa -out key.pem
     ```
     """
-    with open(parameters_file, "rb") as parameters_file_handle:
+    with open(key_file, "rb") as parameters_file_handle:
         data = parameters_file_handle.read()
     parsed_key = parse_pem_private_key(data, None)
     assert isinstance(parsed_key, pyca_rsa.RSAPrivateKey)
