@@ -15,7 +15,9 @@ def main() -> None:
 
     scheme = DSAScheme(hash_function)
     message = 0b1100110011001100
+    print(f"{message = }")
     signature = scheme.signature_for(message, private_key)
+    print(f"{signature = }")
     valid = scheme.verify_signature(message, signature, public_key)
     print(f"the signature is {"valid" if valid else "invalid"}")
 
