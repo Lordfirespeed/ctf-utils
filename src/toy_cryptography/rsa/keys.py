@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from math import gcd
 
+from extras.math_extras import miller_rabin_primality_test as probable_prime
 from extras.random_extras import prime_randint_of_digit_length, randint_coprime_to
 
 
@@ -30,6 +31,10 @@ class RSAPrivateKey:
         return (self.prime1 - 1) * (self.prime2 - 1)
 
     def __post_init__(self):
+        assert probable_prime(self.prime1), \
+            "prime1 should be (probably) prime"
+        assert probable_prime(self.prime2), \
+            "prime2 should be (probably) prime"
         assert self.modulus == self.prime1 * self.prime2, \
             "modulus should be product of prime1 and prime2"
         assert gcd(self.public_exponent, self.group_order) == 1, \
