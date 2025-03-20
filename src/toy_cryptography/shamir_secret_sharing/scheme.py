@@ -41,6 +41,7 @@ def compute_shares_of_secret(secret: Poly, modulus: int, party_count: int) -> li
 
 
 def reconstruct_secret(shares: Sequence[Share], modulus: int) -> Poly:
+    # it is crucial to use `sympy.poly` as plain sympy expressions don't allow truncation (reduction modulo q)
     accumulator = poly(0, x, domain="ZZ")
 
     def delta_k(index_i: int) -> Poly:
