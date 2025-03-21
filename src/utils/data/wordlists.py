@@ -10,7 +10,7 @@ from yarl import URL
 from utils.cached_download import cached_download
 
 
-word_lists_dirname = Path("wordlists")
+word_lists_dirname = Path("data")
 
 
 @dataclass

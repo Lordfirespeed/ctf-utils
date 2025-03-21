@@ -1,6 +1,6 @@
 import asyncio
 
-from utils.wordlists import *
+from utils.data import *
 
 
 async def main():
