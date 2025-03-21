@@ -75,17 +75,21 @@ class sortabledict[TKey, TValue](UserDict[TKey, TValue]):
         super().__init__(data, **kwargs)
 
     # region modification (UserDict)
-    def __setitem__(self, key, value) -> None:
+    def __setitem__(self, key: TKey, value: TValue) -> None:
         if not key in self.data:
             self._order.append(key)
         self.data[key] = value
 
-    def __delitem__(self, key) -> None:
+    def __delitem__(self, key: TKey) -> None:
         if key in self.data:
             index = self._order.index(key)
             del self._order[index]
         del self.data[key]
 
+    @overload
+    def __ior__(self, __mapping: SupportsKeysAndGetItem[TKey, TValue]) -> Self: ...
+    @overload
+    def __ior__(self, __iterable: Iterable[tuple[TKey, TValue]]) -> Self: ...
     def __ior__(self, other) -> Self:
         self.update(other)
         return self
@@ -105,6 +109,20 @@ class sortabledict[TKey, TValue](UserDict[TKey, TValue]):
 
     def items(self):
         return sortabledict_items(self)
+    # endregion
+
+    # region type hints that shouldn't be necessary but are
+    def __getitem__(self, item: TKey) -> TValue:
+        return super().__getitem__(item)
+
+    @overload
+    def get(self, key: TKey, /) -> TValue | None: ...  # noqa
+    @overload
+    def get(self, key: TKey, default: TValue, /) -> TValue: ...  # noqa
+    @overload
+    def get[TDefault](self, key: TKey, default: TDefault, /) -> TValue | TDefault: ...  # noqa
+    def get(self, key, default = None, /):
+        return super().get(key, default=default)
     # endregion
 
     # region extra features
