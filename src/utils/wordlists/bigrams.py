@@ -1,3 +1,7 @@
+"""
+https://en.wikipedia.org/wiki/Bigram
+"""
+
 import asyncio
 import itertools
 import json
