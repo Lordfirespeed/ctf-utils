@@ -1,11 +1,11 @@
 from types import NoneType
 
 
-SupportsFlush = NoneType
-SupportsKeysAndGetItem = NoneType
-SupportsRichComparison = NoneType
-SupportsRichComparisonT = NoneType
-SupportsWrite = NoneType
+type SupportsFlush = NoneType
+type SupportsKeysAndGetItem[TKey, TValue] = NoneType
+type SupportsRichComparison = NoneType
+type SupportsRichComparisonT = NoneType
+type SupportsWrite = NoneType
 
 
 __all__ = (
