@@ -11,5 +11,5 @@ if TYPE_CHECKING:
 else:
     # cheap dynamic import hack to prevent PyCharm from mistakenly replacing actual type annotations with the dummy ones
     from extras import importlib_extras
-    importlib_extras.import_all_names_from(locals(), ".shed_dummy", __package__)
-    importlib_extras.import_all_names_from(locals(), ".io_dummy", __package__)
+    importlib_extras.import_all_names_from(globals(), ".shed_dummy", __package__)
+    importlib_extras.import_all_names_from(globals(), ".io_dummy", __package__)
