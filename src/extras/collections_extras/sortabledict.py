@@ -114,6 +114,9 @@ class sortabledict[TKey, TValue](UserDict[TKey, TValue]):
     def sort(self, *, key: Callable[[TKey], SupportsRichComparison], reverse: bool = False) -> None: ...
     def sort(self, *, key = None, reverse = False) :
         self._order.sort(key=key, reverse=reverse)
+
+    def sort_by_value(self: "sortabledict[Any, SupportsRichComparisonT]", reverse: bool = False) -> None:
+        self.sort(key=self.get, reverse=reverse)
     # endregion
 
 
