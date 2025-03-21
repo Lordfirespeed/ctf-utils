@@ -43,7 +43,7 @@ async def load_main_bigrams_dataset() -> Mapping[str, int]:
 
 def compute_lowercase_bigrams_dataset(main_bigrams_dataset: Mapping[str, int]) -> Mapping[str, int]:
     def all_lowercase_bigrams() -> Iterator[str]:
-        for pair in itertools.product(ascii_lowercase, repeat=2):
+        for pair in itertools.product(ascii_lowercase + " ", repeat=2):
             yield "".join(pair)
 
     lowercase_bigrams_dataset = sortabledict[str, int]({ bigram: 0 for bigram in all_lowercase_bigrams() })
@@ -60,22 +60,59 @@ def compute_lowercase_bigrams_dataset(main_bigrams_dataset: Mapping[str, int]) -
     return dict(lowercase_bigrams_dataset)
 
 
+def compute_no_spaces_lowercase_bigrams_dataset(main_bigrams_dataset: Mapping[str, int]) -> Mapping[str, int]:
+    def all_lowercase_bigrams() -> Iterator[str]:
+        for pair in itertools.product(ascii_lowercase, repeat=2):
+            yield "".join(pair)
+
+    no_spaces_lowercase_bigrams_dataset = sortabledict[str, int]({ bigram: 0 for bigram in all_lowercase_bigrams() })
+
+    for bigram, frequency in main_bigrams_dataset.items():
+        left, right = bigram
+        if not left.islower():
+            continue
+        if not right.islower():
+            continue
+        no_spaces_lowercase_bigrams_dataset[bigram] = frequency
+
+    no_spaces_lowercase_bigrams_dataset.sort()
+    return dict(no_spaces_lowercase_bigrams_dataset)
+
+
 async def ensure_lowercase_bigrams_dataset_file() -> Path:
-    lowercase_bigrams_dataset_file = project_cache_dirname / "lowercase-bigrams.json"
-    if lowercase_bigrams_dataset_file.exists():
-        return lowercase_bigrams_dataset_file
+    dataset_file = project_cache_dirname / "lowercase-bigrams-with-spaces.json"
+    if dataset_file.exists():
+        return dataset_file
 
     main_bigrams_dataset = await load_main_bigrams_dataset()
     lowercase_bigrams_dataset = compute_lowercase_bigrams_dataset(main_bigrams_dataset)
-    with open(lowercase_bigrams_dataset_file, "w") as lowercase_bigrams_dataset_file_handle:
-        json.dump(lowercase_bigrams_dataset, lowercase_bigrams_dataset_file_handle, indent=2)
+    with open(dataset_file, "w") as dataset_file_handle:
+        json.dump(lowercase_bigrams_dataset, dataset_file_handle, indent=2)
 
-    return lowercase_bigrams_dataset_file
+    return dataset_file
+
+
+async def ensure_no_spaces_lowercase_bigrams_dataset_file() -> Path:
+    dataset_file = project_cache_dirname / "lowercase-bigrams-without-spaces.json"
+    if dataset_file.exists():
+        return dataset_file
+
+    main_bigrams_dataset = await load_main_bigrams_dataset()
+    no_spaces_lowercase_bigrams_dataset = compute_no_spaces_lowercase_bigrams_dataset(main_bigrams_dataset)
+    with open(dataset_file, "w") as dataset_file_handle:
+        json.dump(no_spaces_lowercase_bigrams_dataset, dataset_file_handle, indent=2)
+
+    return dataset_file
 
 
 async def load_lowercase_bigrams_dataset() -> Mapping[str, int]:
     lowercase_bigrams_dataset_file = await ensure_lowercase_bigrams_dataset_file()
     return load_json_bigrams_dataset(lowercase_bigrams_dataset_file)
+
+
+async def load_no_spaces_lowercase_bigrams_dataset() -> Mapping[str, int]:
+    no_spaces_lowercase_bigrams_dataset_file = await ensure_no_spaces_lowercase_bigrams_dataset_file()
+    return load_json_bigrams_dataset(no_spaces_lowercase_bigrams_dataset_file)
 
 
 async def main():
@@ -86,6 +123,7 @@ async def main():
 __all__ = (
     "load_main_bigrams_dataset",
     "load_lowercase_bigrams_dataset",
+    "load_no_spaces_lowercase_bigrams_dataset",
 )
 
 if __name__ == "__main__":
