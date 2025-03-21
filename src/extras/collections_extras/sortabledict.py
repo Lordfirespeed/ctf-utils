@@ -137,5 +137,14 @@ class sortabledict[TKey, TValue](UserDict[TKey, TValue]):
         self.sort(key=self.get, reverse=reverse)
     # endregion
 
+    # region stringify
+    def __repr__(self):
+        assignments = (f"{key!r}: {value!r}" for key, value in self.items())
+        return f"{{{", ".join(assignments)}}}"
+
+    def __str__(self):
+        return repr(self)
+    # endregion
+
 
 __all__ = ("sortabledict",)
