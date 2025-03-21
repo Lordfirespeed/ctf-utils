@@ -1,5 +1,7 @@
-SupportsFlush = None
-SupportsWrite = None
-Writable = None
+from types import NoneType
 
-__all__ = ("SupportsFlush", "SupportsWrite", "Writable",)
+
+Writable = NoneType
+
+
+__all__ = ("Writable",)

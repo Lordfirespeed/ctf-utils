@@ -1,8 +1,8 @@
-from _typeshed import SupportsWrite, SupportsFlush
+from .shed import SupportsWrite, SupportsFlush
 
 
 class Writable(SupportsFlush, SupportsWrite):
     pass
 
 
-__all__ = ("SupportsFlush", "SupportsWrite", "Writable",)
+__all__ = ("Writable",)
