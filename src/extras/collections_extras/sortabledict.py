@@ -5,11 +5,11 @@ from typing import Any, Callable, Hashable, Iterator, Mapping, Self, overload
 from utils.typedefs import SupportsRichComparison, SupportsRichComparisonT
 
 
-class SortableDictKeysView[TKey, TValue](KeysView[TKey, TValue]):
-    _mapping: "SortableDict[TKey, TValue]"
+class sortabledict_keys[TKey, TValue](KeysView[TKey, TValue]):
+    _mapping: "sortabledict[TKey, TValue]"
 
-    def __init__(self, mapping: "SortableDict[TKey, TValue]"):
-        assert isinstance(mapping, SortableDict)
+    def __init__(self, mapping: "sortabledict[TKey, TValue]"):
+        assert isinstance(mapping, sortabledict)
         super().__init__(mapping)
 
     def __iter__(self) -> Iterator[TKey]:
@@ -19,11 +19,11 @@ class SortableDictKeysView[TKey, TValue](KeysView[TKey, TValue]):
         yield from reversed(self._mapping._order)
 
 
-class SortableDictValuesView[TKey, TValue](ValuesView[TKey, TValue]):
-    _mapping: "SortableDict[TKey, TValue]"
+class sortabledict_values[TKey, TValue](ValuesView[TKey, TValue]):
+    _mapping: "sortabledict[TKey, TValue]"
 
-    def __init__(self, mapping: "SortableDict[TKey, TValue]"):
-        assert isinstance(mapping, SortableDict)
+    def __init__(self, mapping: "sortabledict[TKey, TValue]"):
+        assert isinstance(mapping, sortabledict)
         super().__init__(mapping)
 
     def __iter__(self) -> Iterator[TValue]:
@@ -35,11 +35,11 @@ class SortableDictValuesView[TKey, TValue](ValuesView[TKey, TValue]):
             yield self._mapping[key]
 
 
-class SortableDictItemsView[TKey, TValue](ItemsView[TKey, TValue]):
-    _mapping: "SortableDict[TKey, TValue]"
+class sortabledict_items[TKey, TValue](ItemsView[TKey, TValue]):
+    _mapping: "sortabledict[TKey, TValue]"
 
-    def __init__(self, mapping: "SortableDict[TKey, TValue]"):
-        assert isinstance(mapping, SortableDict)
+    def __init__(self, mapping: "sortabledict[TKey, TValue]"):
+        assert isinstance(mapping, sortabledict)
         super().__init__(mapping)
 
     def __iter__(self) -> Iterator[tuple[TKey, TValue]]:
@@ -51,7 +51,7 @@ class SortableDictItemsView[TKey, TValue](ItemsView[TKey, TValue]):
             yield key, self._mapping[key]
 
 
-class SortableDict[TKey: Hashable, TValue](UserDict[TKey, TValue]):
+class sortabledict[TKey: Hashable, TValue](UserDict[TKey, TValue]):
     _order: list[TKey]
 
     def __init__(self, data=None, /, **kwargs) -> None:
@@ -82,13 +82,13 @@ class SortableDict[TKey: Hashable, TValue](UserDict[TKey, TValue]):
     def keys(self):
         # todo: the 'keys' view should also implement a semi-mutable list view interface
         # re-ordering should be permitted but e.g. deletion, insertion, replacement forbidden
-        return SortableDictKeysView(self)
+        return sortabledict_keys(self)
 
     def values(self):
-        return SortableDictValuesView(self)
+        return sortabledict_values(self)
 
     def items(self):
-        return SortableDictItemsView(self)
+        return sortabledict_items(self)
     # endregion
 
     # region extra features
@@ -101,4 +101,4 @@ class SortableDict[TKey: Hashable, TValue](UserDict[TKey, TValue]):
     # endregion
 
 
-__all__ = ("SortableDict",)
+__all__ = ("sortabledict",)
