@@ -1,8 +1,12 @@
 from collections import UserDict
 from collections.abc import ValuesView, KeysView, ItemsView
-from typing import Any, Callable, Hashable, Iterator, Mapping, Self, overload
+from typing import Any, Callable, Iterable, Iterator, Mapping, Self, overload
 
-from utils.typedefs import SupportsRichComparison, SupportsRichComparisonT
+from utils.typedefs import (
+    SupportsKeysAndGetItem,
+    SupportsRichComparison,
+    SupportsRichComparisonT,
+)
 
 
 class sortabledict_keys[TKey, TValue](KeysView[TKey, TValue]):
@@ -51,10 +55,22 @@ class sortabledict_items[TKey, TValue](ItemsView[TKey, TValue]):
             yield key, self._mapping[key]
 
 
-class sortabledict[TKey: Hashable, TValue](UserDict[TKey, TValue]):
+class sortabledict[TKey, TValue](UserDict[TKey, TValue]):
     _order: list[TKey]
 
-    def __init__(self, data=None, /, **kwargs) -> None:
+    @overload
+    def __init__(self) -> None: ...
+    @overload
+    def __init__(self: dict[str, TValue], /, **kwargs: TValue) -> None: ...
+    @overload
+    def __init__(self, __map: SupportsKeysAndGetItem[TKey, TValue]) -> None: ...
+    @overload
+    def __init__(self: dict[str, TValue], __map: SupportsKeysAndGetItem[str, TValue], /, **kwargs: TValue) -> None: ...
+    @overload
+    def __init__(self, __iterable: Iterable[tuple[TKey, TValue]]) -> None: ...
+    @overload
+    def __init__(self: dict[str, TValue], __iterable: Iterable[tuple[str, TValue]], /, **kwargs: TValue) -> None: ...
+    def __init__(self, data = None, /, **kwargs) -> None:
         self._order = []
         super().__init__(data, **kwargs)
 
