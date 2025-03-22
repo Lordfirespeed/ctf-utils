@@ -7,6 +7,7 @@ dependencies = [
     "aiohttp>=3.11.13",
     "bidict>=0.23.1",
     "cryptography>=44.0.2",
+    "gmpy2>=2.2.1",
     "numpy>=2.2.3",
     "pyasn1>=0.6.1",
     "pygments>=2.19.1",
