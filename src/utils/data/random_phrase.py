@@ -1,4 +1,4 @@
-from .generic import WordList
+from .wordlists import WordList
 from random import choices
 
 

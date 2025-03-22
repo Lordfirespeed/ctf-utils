@@ -1,2 +1,2 @@
-from .generic import *
+from .wordlists import *
 from .random_phrase import *
