@@ -33,11 +33,17 @@ def randbelow(exclusive_upper_bound):
     return _inst._randbelow(exclusive_upper_bound)
 
 
+# derived from https://docs.python.org/3/library/random.html#random.binomialvariate
+def coin_flip(p=0.5) -> bool:
+    return random() < p
+
+
 __all__ = (
     "betavariate",
     "binomialvariate",
     "choice",
     "choices",
+    "coin_flip",
     "expovariate",
     "gammavariate",
     "gauss",
