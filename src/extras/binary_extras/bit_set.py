@@ -18,7 +18,7 @@ from typing import (
 
 from numpy import dtype, ndarray, uint64, zeros as array_of_zeros
 
-from utils.typedefs import SupportsBool
+from utils.typedefs.protocols import SupportsBool
 
 from .bit_twiddling import (
     first_set_bit_index, last_set_bit_index,
@@ -190,6 +190,10 @@ class BitSet:
     # endregion
 
     # region 'public' API/methods/conversions
+
+    def to_bin(self) -> str:
+        """Return the binary representation of the BitSet."""
+        return "".join(f"{word:064b}"[::-1] for word in self._words)
 
     def to_bytes(self) -> bytes:
         raise NotImplemented

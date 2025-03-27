@@ -1,4 +1,4 @@
-from utils.bit_set import BitSet
+from extras.binary_extras.bit_set import BitSet
 
 
 def sieve_primes_less_than(bound: int) -> list[int]:
