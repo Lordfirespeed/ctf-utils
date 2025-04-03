@@ -32,7 +32,7 @@ async def load_english_bigram_proportions() -> BigramProportions:
 english_bigram_proportions = asyncio.run(load_english_bigram_proportions())
 
 
-def plausibility(plaintext: str, reference: BigramProportions = None) -> Plausibility:
+def bigram_plausibility(plaintext: str, reference: BigramProportions = None) -> Plausibility:
     if len(plaintext) < 2:
         raise ValueError
     if reference is None:
@@ -63,35 +63,34 @@ def maximise_plaintext_plausibility(
         nonlocal plaintext_alphabet
         return sysrandom.sample(plaintext_alphabet, 2)
 
-    def apply_swap(swap: Swap) -> None:
+    def apply_swap(swap: Swap, key: bidict[str, str]) -> None:
         """Note that applying a swap for a second time is functionally equivalent to 'undoing' the swap."""
-        nonlocal current_key
         first, second = swap
-        first_image = current_key[first]
-        second_image = current_key[second]
-        current_key.forceput(first, second_image)
-        current_key.put(second, first_image)
+        first_image = key[first]
+        second_image = key[second]
+        key.forceput(first, second_image)
+        key.put(second, first_image)
 
-    def compute_current_plausibility() -> Plausibility:
-        nonlocal ciphertext, current_key, reference
-        plaintext = decode(ciphertext, current_key)
-        return plausibility(plaintext, reference)
+    def compute_plausibility(key: CipherKey) -> Plausibility:
+        nonlocal ciphertext, reference
+        plaintext = decode(ciphertext, key)
+        return bigram_plausibility(plaintext, reference)
 
     def print_status(iteration: int, printer: Callable[[str], None]) -> None:
         plaintext_preview = decode(ciphertext[:25], current_key)
         printer(f"epoch {iteration:5}: '{plaintext_preview}...'")
 
     def main_loop(printer: Callable[[str], None]):
-        current_plausibility = compute_current_plausibility()
+        current_plausibility = compute_plausibility(current_key)
         iterations_without_acceptance = 0
         for iteration_index in itertools.count():
             if iteration_index % 100 == 0:
                 print_status(iteration_index, printer)
-            if iterations_without_acceptance >= 350:
+            if iterations_without_acceptance >= 1000:
                 break
             swap = random_swap()
-            apply_swap(swap)
-            new_plausibility = compute_current_plausibility()
+            apply_swap(swap, current_key)
+            new_plausibility = compute_plausibility(current_key)
             if new_plausibility > current_plausibility:
                 current_plausibility = new_plausibility
                 iterations_without_acceptance = 0
@@ -100,21 +99,24 @@ def maximise_plaintext_plausibility(
                 current_plausibility = new_plausibility
                 iterations_without_acceptance = 0
                 continue
-            apply_swap(swap)
+            apply_swap(swap, current_key)
             iterations_without_acceptance += 1
 
     with Printer() as printer:
-        main_loop(printer)
+        try:
+            main_loop(printer)
+        except KeyboardInterrupt:
+            pass
 
     return current_key
 
 
-__all__ = ("BigramProportions", "Plausibility", "plausibility", "maximise_plaintext_plausibility",)
+__all__ = ("BigramProportions", "Plausibility", "bigram_plausibility", "maximise_plaintext_plausibility",)
 
 
 def main():
-    from .analyser import ciphertext, analyse_character_frequencies, infer_cipher_key
-    ciphertext_character_frequency = analyse_character_frequencies(ciphertext)
+    from .analyser import ciphertext, analyse_character_proportions, infer_cipher_key
+    ciphertext_character_frequency = analyse_character_proportions(ciphertext)
     cipher_key = infer_cipher_key(ciphertext_character_frequency)
     better_key = maximise_plaintext_plausibility(ciphertext, cipher_key)
     print(better_key)
