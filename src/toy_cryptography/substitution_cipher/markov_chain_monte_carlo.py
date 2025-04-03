@@ -120,6 +120,11 @@ class PlaintextPlausibilityMaximiser:
                 break
             self.step()
 
+    def many_steps(self, *, count: int) -> None:
+        target = self.steps + count
+        while self.steps < target:
+            self.step()
+
 
 def maximise_plaintext_plausibility(
     ciphertext: str,
