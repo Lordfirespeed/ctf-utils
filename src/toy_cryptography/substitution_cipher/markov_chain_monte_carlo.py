@@ -4,7 +4,6 @@ https://www.ams.org/journals/bull/2009-46-02/S0273-0979-08-01238-X/S0273-0979-08
 import asyncio
 from contextlib import ExitStack, suppress
 import itertools
-from string import ascii_lowercase
 from typing import Callable, Iterable, NewType
 
 from gmpy2 import mpq
@@ -56,19 +55,25 @@ class PlaintextPlausibilityMaximiser:
     def __init__(
         self,
         ciphertext: str,
-        initial_key: CipherKey,
+        initial_uncertain_key: CipherKey,
+        partial_certain_key: CipherKey | None = None,
         reference: BigramProportions = None,
     ) -> None:
         self.ciphertext = ciphertext
-        self.plaintext_alphabet = sorted(initial_key.values())
-        self.current_key = bidict(initial_key)
+        self.plaintext_alphabet = sorted(initial_uncertain_key.keys())
+        if partial_certain_key is None:
+            partial_certain_key = bidict()
+        swap_alphabet_set = set(self.plaintext_alphabet)
+        swap_alphabet_set.difference_update(partial_certain_key.keys())
+        self.swap_alphabet = sorted(swap_alphabet_set)
+        self.current_key = bidict(initial_uncertain_key)
         self.reference = reference
         self.current_plausibility = self.compute_plausibility(self.current_key)
         self.steps = 0
         self.steps_without_acceptance = 0
 
     def random_swap(self) -> Swap:
-        return sysrandom.sample(self.plaintext_alphabet, 2)
+        return sysrandom.sample(self.swap_alphabet, 2)
 
     @staticmethod
     def apply_swap(swap: Swap | None, key: MutableCipherKey):
@@ -120,7 +125,7 @@ class PlaintextPlausibilityMaximiser:
             self.apply_swap(swap, self.current_key)
             return plausibility
 
-        all_swaps: Iterable[Swap] = itertools.combinations(ascii_lowercase, 2)
+        all_swaps: Iterable[Swap] = itertools.combinations(self.swap_alphabet, 2)
         all_swaps = itertools.chain((None, ), all_swaps)
         return max(all_swaps, key=swap_metric)
 
@@ -165,17 +170,3 @@ class PlaintextPlausibilityMaximiser:
 
 
 __all__ = ("BigramProportions", "Plausibility", "bigram_plausibility", "PlaintextPlausibilityMaximiser",)
-
-
-def main():
-    from .analyser import ciphertext, analyse_character_proportions, infer_cipher_key
-    ciphertext_character_frequency = analyse_character_proportions(ciphertext)
-    cipher_key = infer_cipher_key(ciphertext_character_frequency)
-    chain = PlaintextPlausibilityMaximiser(ciphertext, cipher_key)
-    chain.main_loop()
-    better_key = chain.current_key
-    print("".join(better_key[c] for c in ascii_lowercase))
-
-
-if __name__ == "__main__":
-    main()
