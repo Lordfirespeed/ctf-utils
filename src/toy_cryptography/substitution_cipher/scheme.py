@@ -1,3 +1,4 @@
+from bidict import bidict
 from utils.typedefs import Bidict
 
 
@@ -27,4 +28,14 @@ def decode(ciphertext: str, key: CipherKey) -> str:
     return encode(ciphertext, key.inverse)
 
 
-__all__ = ("CipherKey", "encode", "decode")
+def update_key(sink: CipherKey, source: CipherKey) -> CipherKey:
+    sink = bidict(sink)
+    for key, value in source.items():
+        old_value = sink[key]
+        old_key = sink.inverse[value]
+        sink.forceput(key, value)
+        sink.put(old_key, old_value)
+    return sink
+
+
+__all__ = ("CipherKey", "encode", "decode", "update_key")
