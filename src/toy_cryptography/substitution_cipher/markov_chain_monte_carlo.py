@@ -49,21 +49,30 @@ def bigram_plausibility(plaintext: str, reference: BigramProportions = None) -> 
     return Plausibility(accumulator)
 
 
-def maximise_plaintext_plausibility(
-    ciphertext: str,
-    initial_key: CipherKey,
-    reference: BigramProportions = None,
-) -> CipherKey:
-    plaintext_alphabet = sorted(initial_key.values())
-    current_key = bidict(initial_key)
+class PlaintextPlausibilityMaximiser:
 
     type Swap = (str, str)
+    type MutableCipherKey = bidict[str, str]
 
-    def random_swap() -> Swap:
-        nonlocal plaintext_alphabet
-        return sysrandom.sample(plaintext_alphabet, 2)
+    def __init__(
+        self,
+        ciphertext: str,
+        initial_key: CipherKey,
+        reference: BigramProportions = None,
+    ) -> None:
+        self.ciphertext = ciphertext
+        self.plaintext_alphabet = sorted(initial_key.values())
+        self.current_key = bidict(initial_key)
+        self.reference = reference
+        self.current_plausibility = self.compute_plausibility(self.current_key)
+        self.steps = 0
+        self.steps_without_acceptance = 0
 
-    def apply_swap(swap: Swap, key: bidict[str, str]) -> None:
+    def random_swap(self) -> Swap:
+        return sysrandom.sample(self.plaintext_alphabet, 2)
+
+    @staticmethod
+    def apply_swap(swap: Swap, key: MutableCipherKey):
         """Note that applying a swap for a second time is functionally equivalent to 'undoing' the swap."""
         first, second = swap
         first_image = key[first]
@@ -71,44 +80,61 @@ def maximise_plaintext_plausibility(
         key.forceput(first, second_image)
         key.put(second, first_image)
 
-    def compute_plausibility(key: CipherKey) -> Plausibility:
-        nonlocal ciphertext, reference
-        plaintext = decode(ciphertext, key)
-        return bigram_plausibility(plaintext, reference)
+    def compute_plausibility(self, key: CipherKey) -> Plausibility:
+        plaintext = decode(self.ciphertext, key)
+        return bigram_plausibility(plaintext, self.reference)
 
-    def print_status(iteration: int, printer: Callable[[str], None]) -> None:
-        plaintext_preview = decode(ciphertext[:25], current_key)
+    def print_status(self, iteration: int, printer: Callable[[str], None]) -> None:
+        plaintext_preview = decode(self.ciphertext[:25], self.current_key)
         printer(f"epoch {iteration:5}: '{plaintext_preview}...'")
 
-    def main_loop(printer: Callable[[str], None]):
-        current_plausibility = compute_plausibility(current_key)
-        iterations_without_acceptance = 0
+    def step(self) -> None:
+        swap = self.random_swap()
+        self.apply_swap(swap, self.current_key)
+        new_plausibility = self.compute_plausibility(self.current_key)
+
+        def accept() -> None:
+            self.current_plausibility = new_plausibility
+            self.steps_without_acceptance = 0
+
+        def reject() -> None:
+            self.apply_swap(swap, self.current_key)
+            self.steps_without_acceptance += 1
+
+        if new_plausibility > self.current_plausibility:
+            accept()
+            return
+        if sysrandom.coin_flip(p=(new_plausibility / self.current_plausibility)):
+            accept()
+            return
+
+        reject()
+
+    def main_loop(self, printer: Callable[[str], None], threshold: int = 350) -> None:
         for iteration_index in itertools.count():
             if iteration_index % 100 == 0:
-                print_status(iteration_index, printer)
-            if iterations_without_acceptance >= 1000:
+                self.print_status(iteration_index, printer)
+            if self.steps_without_acceptance >= threshold:
                 break
-            swap = random_swap()
-            apply_swap(swap, current_key)
-            new_plausibility = compute_plausibility(current_key)
-            if new_plausibility > current_plausibility:
-                current_plausibility = new_plausibility
-                iterations_without_acceptance = 0
-                continue
-            if sysrandom.coin_flip(p=(new_plausibility/current_plausibility)):
-                current_plausibility = new_plausibility
-                iterations_without_acceptance = 0
-                continue
-            apply_swap(swap, current_key)
-            iterations_without_acceptance += 1
+            self.step()
 
+
+def maximise_plaintext_plausibility(
+    ciphertext: str,
+    initial_key: CipherKey,
+    reference: BigramProportions = None,
+) -> CipherKey:
+    maximiser = PlaintextPlausibilityMaximiser(
+        ciphertext,
+        initial_key,
+        reference,
+    )
     with Printer() as printer:
         try:
-            main_loop(printer)
+            maximiser.main_loop(printer)
         except KeyboardInterrupt:
             pass
-
-    return current_key
+    return maximiser.current_key
 
 
 __all__ = ("BigramProportions", "Plausibility", "bigram_plausibility", "maximise_plaintext_plausibility",)
