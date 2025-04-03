@@ -95,10 +95,12 @@ class PlaintextPlausibilityMaximiser:
 
         def accept() -> None:
             self.current_plausibility = new_plausibility
+            self.steps += 1
             self.steps_without_acceptance = 0
 
         def reject() -> None:
             self.apply_swap(swap, self.current_key)
+            self.steps += 1
             self.steps_without_acceptance += 1
 
         if new_plausibility > self.current_plausibility:
@@ -111,9 +113,9 @@ class PlaintextPlausibilityMaximiser:
         reject()
 
     def main_loop(self, printer: Callable[[str], None], threshold: int = 350) -> None:
-        for iteration_index in itertools.count():
-            if iteration_index % 100 == 0:
-                self.print_status(iteration_index, printer)
+        while True:
+            if self.steps % 100 == 0:
+                self.print_status(self.steps, printer)
             if self.steps_without_acceptance >= threshold:
                 break
             self.step()
