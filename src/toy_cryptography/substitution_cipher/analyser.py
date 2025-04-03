@@ -7,10 +7,10 @@ from utils.data.monograms import english_text_letter_frequencies
 from .scheme import CipherKey, decode
 
 
-CharacterFrequencies = NewType("CharacterFrequencies", sortabledict[str, float])
+CharacterProportions = NewType("CharacterProportions", sortabledict[str, float])
 
 
-def analyse_character_frequencies(text: str) -> CharacterFrequencies:
+def analyse_character_proportions(text: str) -> CharacterProportions:
     character_counts: dict[str, int] = {c: 0 for c in ascii_lowercase}
     text_length = 0
 
@@ -24,23 +24,23 @@ def analyse_character_frequencies(text: str) -> CharacterFrequencies:
 
     character_frequencies = sortabledict({character: (count / text_length) for character, count in character_counts.items()})
     character_frequencies.sort_by_value(reverse=True)
-    return CharacterFrequencies(character_frequencies)
+    return CharacterProportions(character_frequencies)
 
 
-def letters_ordered_by_frequency(frequency: CharacterFrequencies) -> Sequence[str]:
-    frequency.sort_by_value(reverse=True)
-    return [letter for letter in frequency.keys()]
+def letters_ordered_by_frequency(proportions: CharacterProportions) -> Sequence[str]:
+    proportions.sort_by_value(reverse=True)
+    return [letter for letter in proportions.keys()]
 
 
 def infer_cipher_key(
-    ciphertext_frequency: CharacterFrequencies,
-    reference_frequency: CharacterFrequencies = None,
+    ciphertext_proportions: CharacterProportions,
+    reference: CharacterProportions = None,
 ) -> CipherKey:
-    if reference_frequency is None:
-        reference_frequency = english_text_letter_frequencies
+    if reference is None:
+        reference = english_text_letter_frequencies
 
-    reference_letter_order = letters_ordered_by_frequency(reference_frequency)
-    text_letter_order = letters_ordered_by_frequency(ciphertext_frequency)
+    reference_letter_order = letters_ordered_by_frequency(reference)
+    text_letter_order = letters_ordered_by_frequency(ciphertext_proportions)
 
     return bidict(zip(reference_letter_order, text_letter_order))
 
@@ -80,7 +80,7 @@ real_key = bidict({a: b for a, b in zip(ascii_lowercase, "aesbntilfhqpvorkcjzgdy
 
 # this is abysmal. Improve it: https://www.dcode.fr/monoalphabetic-substitution#q7
 def main():
-    ciphertext_character_frequency = analyse_character_frequencies(ciphertext)
+    ciphertext_character_frequency = analyse_character_proportions(ciphertext)
     cipher_key = infer_cipher_key(ciphertext_character_frequency)
     round_trip_plaintext = decode(ciphertext, cipher_key)
     print(round_trip_plaintext)
@@ -88,7 +88,7 @@ def main():
 
 def debug_main():
     foo = letters_ordered_by_frequency(english_text_letter_frequencies)
-    ciphertext_letter_frequencies = analyse_character_frequencies(ciphertext)
+    ciphertext_letter_frequencies = analyse_character_proportions(ciphertext)
     bar = letters_ordered_by_frequency(ciphertext_letter_frequencies)
     print(english_text_letter_frequencies)
     print(ciphertext_letter_frequencies)
