@@ -1,4 +1,4 @@
-from string import ascii_lowercase
+from copy import copy
 from typing import Sequence, NewType
 
 from extras.collections_extras import bidict, sortabledict
@@ -11,7 +11,7 @@ CharacterProportions = NewType("CharacterProportions", sortabledict[str, float])
 
 
 def analyse_character_proportions(text: str) -> CharacterProportions:
-    character_counts: dict[str, int] = {c: 0 for c in ascii_lowercase}
+    character_counts = dict[str, int]()
     text_length = 0
 
     for character in text:
@@ -40,6 +40,10 @@ def infer_cipher_key(
         reference = english_text_letter_frequencies
 
     reference_letter_order = letters_ordered_by_frequency(reference)
+    ciphertext_proportions = copy(ciphertext_proportions)
+    for plaintext_character in reference_letter_order:
+        proportion = ciphertext_proportions.get(plaintext_character, 0)
+        ciphertext_proportions[plaintext_character] = proportion
     text_letter_order = letters_ordered_by_frequency(ciphertext_proportions)
 
     return bidict(zip(reference_letter_order, text_letter_order))
