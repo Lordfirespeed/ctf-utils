@@ -1,6 +1,6 @@
 from collections import UserDict
 from collections.abc import ValuesView, KeysView, ItemsView
-from typing import Any, Callable, Iterable, Iterator, Mapping, Self, overload
+from typing import Any, Callable, Iterable, Iterator, Mapping, Self, overload, override
 
 from utils.typedefs import (
     SupportsKeysAndGetItem,
@@ -144,6 +144,15 @@ class sortabledict[TKey, TValue](UserDict[TKey, TValue]):
 
     def __str__(self):
         return repr(self)
+    # endregion
+
+    # region copy
+    @override
+    def copy(self):
+        return sortabledict(self.data)
+
+    def __copy__(self):
+        return self.copy()
     # endregion
 
 
