@@ -87,7 +87,6 @@ def _unscreamify(value: bytes | str) -> str:
         ascii_character_bytes = ascii_character.encode("ascii")
         value_bytes[cursor:cursor+grapheme_byte_length] = ascii_character_bytes
         cursor += 1
-    print(value_bytes)
     return value_bytes.decode("ascii")
 
 
