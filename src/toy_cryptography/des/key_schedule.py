@@ -2,12 +2,6 @@ from typing import Generator
 
 from extras.binary_extras import binlify, unbinlify, circular_left_shift
 
-from toy_cryptography.feistel_cipher.scheme import *
-
-
-def des_feistel_function(text: int, key: int) -> int:
-    raise NotImplementedError
-
 
 pc1_c_schedule = (
     57, 49, 41, 33, 25, 17,  9,  1,
@@ -68,4 +62,4 @@ def des_key_schedule(key: int) -> Generator[int]:
         yield round_key
 
 
-__all__ = ("des_key_schedule", "des_feistel_function",)
+__all__ = ("des_key_schedule",)
