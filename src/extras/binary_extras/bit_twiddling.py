@@ -8,6 +8,7 @@ from typing import (
 )
 
 from numpy import integer
+from bitarray import bitarray
 
 from utils.typedefs import BytesLike
 
@@ -54,27 +55,54 @@ def first_set_bit_index(binary: SupportsIndex | BytesLike) -> int | Literal[-1]:
 
 
 @overload
-def circular_left_shift(value: integer, shift: int | integer, width: int | integer) -> integer: ...
+def circular_left_shift(value: integer, shift: int | integer) -> integer: ...
+
+@overload
+def circular_left_shift(value: bitarray, shift: int | integer) -> bitarray: ...
 
 @overload
 def circular_left_shift(value: int, shift: int | integer, width: int | integer) -> int: ...
 
-def circular_left_shift(value, shift, width):
+def circular_left_shift(value, shift, width=None):
     if isinstance(value, integer):
+        assert width is None
+        width = value.nbytes * 8
+        # numpy integers are fixed-length so cannot overflow
         return (value << shift) | (value >> (width - shift))
+
+    if isinstance(value, bitarray):
+        assert width is None
+        width = len(value)
+        # bitarrays are fixed-length so cannot overflow
+        return (value << shift) | (value >> (width - shift))
+
+    assert width is not None
     # https://stackoverflow.com/a/63767548/11045433
     return ((value << shift) % (1 << width)) | (value >> (width - shift))
 
 
 @overload
-def circular_right_shift(value: integer, shift: int | integer, width: int | integer) -> integer: ...
+def circular_right_shift(value: integer, shift: int | integer) -> integer: ...
+
+@overload
+def circular_right_shift(value: bitarray, shift: int | integer) -> bitarray: ...
 
 @overload
 def circular_right_shift(value: int, shift: int | integer, width: int | integer) -> int: ...
 
-def circular_right_shift(value, shift, width):
+def circular_right_shift(value, shift, width=None):
     if isinstance(value, integer):
+        assert width is None
+        width = value.nbytes * 8
+        # numpy integers are fixed-length so cannot overflow
         return (value >> shift) | (value << (width - shift))
+
+    if isinstance(value, bitarray):
+        assert width is None
+        width = len(value)
+        # bitarrays are fixed-length so cannot overflow
+        return (value >> shift) | (value << (width - shift))
+
     return (value >> shift) | ((value << (width - shift)) % (1 << width))
 
 
