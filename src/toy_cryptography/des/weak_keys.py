@@ -1,6 +1,9 @@
 from typing import Sequence
 
-from .scheme import des_key_schedule
+from bitarray import bitarray
+from bitarray.util import int2ba
+
+from .key_schedule import des_key_schedule
 
 
 weak_keys = [
@@ -20,17 +23,18 @@ homogeneous C_0, D_0; those keys are listed here.
 """
 
 
-def is_palindrome(sequence: Sequence[int]) -> bool:
+def is_palindrome(sequence: Sequence[object]) -> bool:
     return all(a == b for a, b in zip(sequence, reversed(sequence)))
 
 
-def check_weak_key(key: int) -> None:
+def check_weak_key(key: bitarray) -> None:
     round_keys = list(des_key_schedule(key))
     assert is_palindrome(round_keys)
 
 
 def main():
-    for key in weak_keys:
+    for key_int in weak_keys:
+        key = int2ba(key_int, length=64)
         check_weak_key(key)
 
 

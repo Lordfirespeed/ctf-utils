@@ -1,5 +1,7 @@
 from typing import Sequence
 
+from bitarray import bitarray
+
 from extras.binary_extras import binlify, unbinlify
 
 from toy_cryptography.des.feistel_function import des_feistel_function
@@ -16,10 +18,10 @@ initial_permutation_schedule = (
     61, 53, 45, 37, 29, 21, 13,  5,
     63, 55, 47, 39, 31, 23, 15,  7,
 )
-def initial_permute(text: int) -> int:
-    text_digits = binlify(text, bit_length=64)
-    permuted_digits = [text_digits[i - 1] for i in initial_permutation_schedule]
-    return unbinlify(permuted_digits)
+def initial_permute(text: bitarray) -> bitarray:
+    assert len(text) == 64
+    permuted_digits = bitarray(text[i - 1] for i in initial_permutation_schedule)
+    return permuted_digits
 
 
 final_permutation_schedule = (
@@ -32,28 +34,29 @@ final_permutation_schedule = (
     34,  2, 42, 10, 50, 18, 58, 26,
     33,  1, 41,  9, 49, 17, 57, 25,
 )
-def final_permute(text: int) -> int:
-    text_digits = binlify(text, bit_length=64)
-    permuted_digits = [text_digits[i - 1] for i in final_permutation_schedule]
-    return unbinlify(permuted_digits)
+def final_permute(text: bitarray) -> bitarray:
+    assert len(text) == 64
+    permuted_digits = bitarray(text[i - 1] for i in final_permutation_schedule)
+    return permuted_digits
 
 
-def _encrypt_core(plaintext: int, round_keys: Sequence[int]) -> int:
+def _encrypt_core(plaintext: bitarray, round_keys: Sequence[bitarray]) -> bitarray:
+    assert len(plaintext) == 64
     initial_permutation = initial_permute(plaintext)
-    left = initial_permutation >> 32
-    right = initial_permutation & 0xffffffff
-    text = feistel_cipher.FeistelText(left, right, half_length=32)
+    left = initial_permutation[0:32]
+    right = initial_permutation[32:64]
+    text = feistel_cipher.FeistelText(left, right)
 
     encrypted = feistel_cipher.encrypt(text, round_keys, des_feistel_function)
-    return final_permute((encrypted.right << 32) + encrypted.left)
+    return final_permute(encrypted.right + encrypted.left)
 
 
-def encrypt(plaintext: int, key: int) -> int:
+def encrypt(plaintext: bitarray, key: bitarray) -> bitarray:
     round_keys = list(des_key_schedule(key))
     return _encrypt_core(plaintext, round_keys)
 
 
-def decrypt(plaintext: int, key: int) -> int:
+def decrypt(plaintext: bitarray, key: bitarray) -> bitarray:
     round_keys = list(des_key_schedule(key))
     round_keys.reverse()
     return _encrypt_core(plaintext, round_keys)

@@ -1,6 +1,7 @@
 from typing import Sequence
 
-from extras.binary_extras import binlify, unbinlify
+from bitarray import bitarray
+from bitarray.util import ba2int, int2ba
 
 
 expand_schedule = (
@@ -13,10 +14,9 @@ expand_schedule = (
     24, 25, 26, 27, 28, 29,
     28, 29, 30, 31, 32,  1,
 )
-def expand(text: int) -> int:
-    text_digits = binlify(text, bit_length=32)
-    expanded_digits = [text_digits[i - 1] for i in expand_schedule]
-    return unbinlify(expanded_digits)
+def expand(text: bitarray) -> bitarray:
+    assert len(text) == 32
+    return bitarray(text[i - 1] for i in expand_schedule)
 
 
 permute_schedule = (
@@ -29,23 +29,22 @@ permute_schedule = (
     19, 13, 30,  6,
     22, 11,  4, 25,
 )
-def permute(text: int) -> int:
-    text_digits = binlify(text, bit_length=32)
-    permuted_digits = [text_digits[i - 1] for i in permute_schedule]
-    return unbinlify(permuted_digits)
+def permute(text: bitarray) -> bitarray:
+    assert len(text) == 32
+    return bitarray(text[i - 1] for i in permute_schedule)
 
 
 substitute_lookup_index_schedule = (
     1, 6, 2, 3, 4, 5,
 )
-def substitute_lookup_index(digits: Sequence[bool]) -> int:
+def substitute_lookup_index(digits: bitarray) -> int:
     assert len(digits) == 6
     # row index = 2b_1 + b_6
     # col index = 8b_2 + 4b_3 + 2b_4 + b_5
     # therefore 'flat' index = 32b_1 + 16b_6 + 8b_2 + 4b_3 + 2b_4 + b_5
     # so permute the digits, then convert to denary
-    permuted_digits = [digits[i - 1] for i in substitute_lookup_index_schedule]
-    return unbinlify(permuted_digits)
+    permuted_digits = bitarray(digits[i - 1] for i in substitute_lookup_index_schedule)
+    return ba2int(permuted_digits)
 
 
 substitute_schedule = {
@@ -98,19 +97,19 @@ substitute_schedule = {
          2,  1, 14,  7,  4, 10,  8, 13, 15, 12,  9,  0,  3,  5,  6, 11,
     ),
 }
-def substitute(text: int) -> int:
-    text_digits = binlify(text, bit_length=48)
-    substituted_digits: list[bool | None] = [None for _ in range(32)]
+def substitute(text: bitarray) -> bitarray:
+    assert len(text) == 48
+    substituted_digits = bitarray(32)
     for segment_index in range(8):
         text_slice = slice(6 * segment_index, 6 * (segment_index+1))
-        segment_digits = text_digits[text_slice]
+        segment_digits = text[text_slice]
         substituted_value = substitute_schedule[segment_index + 1][substitute_lookup_index(segment_digits)]
         substituted_slice = slice(4 * segment_index, 4 * (segment_index+1))
-        substituted_digits[substituted_slice] = binlify(substituted_value, bit_length=4)
-    return unbinlify(substituted_digits)
+        substituted_digits[substituted_slice] = int2ba(substituted_value, length=4)
+    return substituted_digits
 
 
-def des_feistel_function(text: int, key: int) -> int:
+def des_feistel_function(text: bitarray, key: bitarray) -> bitarray:
     expansion = expand(text)
     mixture = expansion ^ key
     substitution = substitute(mixture)

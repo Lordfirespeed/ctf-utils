@@ -1,4 +1,7 @@
 import unittest
+from typing import Sequence
+
+from bitarray.util import ba2hex, ba2int, int2ba
 
 from toy_cryptography.feistel_cipher.scheme import FeistelText, encryption_round as feistel_encryption_round
 from toy_cryptography.des.key_schedule import des_key_schedule
@@ -31,10 +34,12 @@ class DESKeyScheduleTests(unittest.TestCase):
     )
 
     def test_round_keys(self):
-        main_key = 0b00010011_00110100_01010111_01111001_10011011_10111100_11011111_11110001
+        main_key_int = 0b00010011_00110100_01010111_01111001_10011011_10111100_11011111_11110001
+        main_key = int2ba(main_key_int, length=64)
         key_schedule = des_key_schedule(main_key)
-        for expected_round_key, round_key in zip(self.sample_round_keys, key_schedule):
-            self.assertEqual(expected_round_key, round_key)
+        for expected_round_key_int, round_key in zip(self.sample_round_keys, key_schedule):
+            round_key_int = ba2int(round_key)
+            self.assertEqual(expected_round_key_int, round_key_int)
 
 class DESFeistelFunctionTests(unittest.TestCase):
     """
@@ -42,31 +47,39 @@ class DESFeistelFunctionTests(unittest.TestCase):
     https://csrc.nist.gov/pubs/sp/500/20/upd1/final
     """
 
+    @staticmethod
+    def feistel_text_32(left: int, right: int):
+        return FeistelText(
+            left=int2ba(left, length=32),
+            right=int2ba(right, length=32),
+        )
+
     sample_input = (
-        FeistelText(left=0x00000000, right=0x00000000, half_length=32)
+        feistel_text_32(left=0x00000000, right=0x00000000)
     )
 
     sample_round_outputs = (
-        FeistelText(left=0x00000000, right=0x47092B5B, half_length=32),
-        FeistelText(left=0x47092B5B, right=0x53F372AF, half_length=32),
-        FeistelText(left=0x53F372AF, right=0x9F1D158B, half_length=32),
-        FeistelText(left=0x9F1D158B, right=0x8109CBEE, half_length=32),
-        FeistelText(left=0x8109CBEE, right=0x60448698, half_length=32),
-        FeistelText(left=0x60448698, right=0x29EBB1A4, half_length=32),
-        FeistelText(left=0x29EBB1A4, right=0x620CC3A3, half_length=32),
-        FeistelText(left=0x620CC3A3, right=0xDEEB3D8A, half_length=32),
-        FeistelText(left=0xDEEB3D8A, right=0xA1A0354D, half_length=32),
-        FeistelText(left=0xA1A0354D, right=0x9F0303DC, half_length=32),
-        FeistelText(left=0x9F0303DC, right=0xFD898EE8, half_length=32),
-        FeistelText(left=0xFD898EE8, right=0x2D1AE1DD, half_length=32),
-        FeistelText(left=0x2D1AE1DD, right=0xCBC829FA, half_length=32),
-        FeistelText(left=0xCBC829FA, right=0xB367DEC9, half_length=32),
-        FeistelText(left=0xB367DEC9, right=0x3F6C3EFD, half_length=32),
-        FeistelText(left=0x3F6C3EFD, right=0x5A1E5228, half_length=32),
+        feistel_text_32(left=0x00000000, right=0x47092B5B),
+        feistel_text_32(left=0x47092B5B, right=0x53F372AF),
+        feistel_text_32(left=0x53F372AF, right=0x9F1D158B),
+        feistel_text_32(left=0x9F1D158B, right=0x8109CBEE),
+        feistel_text_32(left=0x8109CBEE, right=0x60448698),
+        feistel_text_32(left=0x60448698, right=0x29EBB1A4),
+        feistel_text_32(left=0x29EBB1A4, right=0x620CC3A3),
+        feistel_text_32(left=0x620CC3A3, right=0xDEEB3D8A),
+        feistel_text_32(left=0xDEEB3D8A, right=0xA1A0354D),
+        feistel_text_32(left=0xA1A0354D, right=0x9F0303DC),
+        feistel_text_32(left=0x9F0303DC, right=0xFD898EE8),
+        feistel_text_32(left=0xFD898EE8, right=0x2D1AE1DD),
+        feistel_text_32(left=0x2D1AE1DD, right=0xCBC829FA),
+        feistel_text_32(left=0xCBC829FA, right=0xB367DEC9),
+        feistel_text_32(left=0xB367DEC9, right=0x3F6C3EFD),
+        feistel_text_32(left=0x3F6C3EFD, right=0x5A1E5228),
     )
 
     def test_round_outputs(self):
-        key = 0x10316E028C8F3B4A
+        key_int = 0x10316E028C8F3B4A
+        key = int2ba(key_int, length=64)
         key_schedule = des_key_schedule(key)
         text = self.sample_input
         for round_index in range(16):
@@ -81,6 +94,18 @@ class DESTestVectors(unittest.TestCase):
     NIST Special Publication 500-20, pages 28-33
     https://csrc.nist.gov/pubs/sp/500/20/upd1/final
     """
+
+    def _test_with_vectors(self, vectors: Sequence[tuple[int, int, int]]):
+        for key_int, plaintext_int, expected_ciphertext_int in self.ip_and_e_test_vectors:
+            key = int2ba(key_int, length=64)
+            plaintext = int2ba(plaintext_int, length=64)
+            expected_ciphertext = int2ba(expected_ciphertext_int, length=64)
+
+            with self.subTest(plaintext=ba2hex(plaintext)):
+                ciphertext = des_encrypt(plaintext, key)
+                self.assertEqual(ba2hex(expected_ciphertext), ba2hex(ciphertext))
+                round_trip_plaintext = des_decrypt(ciphertext, key)
+                self.assertEqual(ba2hex(plaintext), ba2hex(round_trip_plaintext))
 
     ip_and_e_test_vectors = (
         (0x0101010101010101, 0x95F8A5E5DD31D900, 0x8000000000000000),
@@ -150,12 +175,7 @@ class DESTestVectors(unittest.TestCase):
     )
 
     def test_ip_and_e(self):
-        for key, plaintext, expected_ciphertext in self.ip_and_e_test_vectors:
-            with self.subTest(plaintext=hex(plaintext)):
-                ciphertext = des_encrypt(plaintext, key)
-                self.assertEqual(hex(expected_ciphertext), hex(ciphertext))
-                round_trip_plaintext = des_decrypt(ciphertext, key)
-                self.assertEqual(hex(plaintext), hex(round_trip_plaintext))
+        self._test_with_vectors(self.ip_and_e_test_vectors)
 
     pc1_and_pc2_test_vectors = (
         (0x8001010101010101, 0x0000000000000000, 0x95A8D72813DAA94D),
@@ -217,12 +237,7 @@ class DESTestVectors(unittest.TestCase):
     )
 
     def test_pc1_and_pc2(self):
-        for key, plaintext, expected_ciphertext in self.pc1_and_pc2_test_vectors:
-            with self.subTest(plaintext=hex(plaintext)):
-                ciphertext = des_encrypt(plaintext, key)
-                self.assertEqual(hex(expected_ciphertext), hex(ciphertext))
-                round_trip_plaintext = des_decrypt(ciphertext, key)
-                self.assertEqual(hex(plaintext), hex(round_trip_plaintext))
+        self._test_with_vectors(self.pc1_and_pc2_test_vectors)
 
     p_test_vectors = (
         (0x1046913489980131, 0x0000000000000000, 0x88D55E54F54C97B4),
@@ -260,12 +275,7 @@ class DESTestVectors(unittest.TestCase):
     )
 
     def test_p(self):
-        for key, plaintext, expected_ciphertext in self.p_test_vectors:
-            with self.subTest(plaintext=hex(plaintext)):
-                ciphertext = des_encrypt(plaintext, key)
-                self.assertEqual(hex(expected_ciphertext), hex(ciphertext))
-                round_trip_plaintext = des_decrypt(ciphertext, key)
-                self.assertEqual(hex(plaintext), hex(round_trip_plaintext))
+        self._test_with_vectors(self.p_test_vectors)
 
     substitution_test_vectors = (
         (0x7CA110454A1A6E57, 0x01A1D6D039776742, 0x690F5B0D9A26939B),
@@ -290,12 +300,7 @@ class DESTestVectors(unittest.TestCase):
     )
 
     def test_substitution(self):
-        for key, plaintext, expected_ciphertext in self.substitution_test_vectors:
-            with self.subTest(plaintext=hex(plaintext)):
-                ciphertext = des_encrypt(plaintext, key)
-                self.assertEqual(hex(expected_ciphertext), hex(ciphertext))
-                round_trip_plaintext = des_decrypt(ciphertext, key)
-                self.assertEqual(hex(plaintext), hex(round_trip_plaintext))
+        self._test_with_vectors(self.substitution_test_vectors)
 
 
 if __name__ == '__main__':

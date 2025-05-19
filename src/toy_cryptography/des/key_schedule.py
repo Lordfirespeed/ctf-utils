@@ -1,5 +1,7 @@
+import itertools
 from typing import Generator
 
+from bitarray import bitarray
 from extras.binary_extras import binlify, unbinlify, circular_left_shift
 
 
@@ -15,12 +17,12 @@ pc1_d_schedule = (
     61, 53, 45, 37, 29, 21, 13,  5,
                     28, 20, 12,  4,
 )
-def permuted_choice_1(key: int) -> (int, int):
+def permuted_choice_1(key: bitarray) -> tuple[bitarray, bitarray]:
     """given 64-bit DES key, returns C_0, D_0 (for computing round keys)"""
-    key_digits = binlify(key, bit_length=64)
-    c_digits = [key_digits[i - 1] for i in pc1_c_schedule]
-    d_digits = [key_digits[i - 1] for i in pc1_d_schedule]
-    return unbinlify(c_digits), unbinlify(d_digits)
+    assert len(key) == 64
+    c_register = bitarray(key[i - 1] for i in pc1_c_schedule)
+    d_register = bitarray(key[i - 1] for i in pc1_d_schedule)
+    return c_register, d_register
 
 
 pc2_schedule = (
@@ -36,28 +38,31 @@ pc2_schedule = (
     44, 49, 39, 56, 34, 53,
     46, 42, 50, 36, 29, 32,
 )
-def permuted_choice_2(c_register: int, d_register: int) -> int:
+def permuted_choice_2(c_register: bitarray, d_register: bitarray) -> bitarray:
     """Given C_i and D_i, returns K_i (a round key)"""
-    c_register_digits = binlify(c_register, bit_length=28)
-    d_register_digits = binlify(d_register, bit_length=28)
+    assert len(c_register) == 28
+    assert len(d_register) == 28
 
-    first_half_digits = (c_register_digits[i - 1] for i in pc2_schedule[:24])
-    second_half_digits = (d_register_digits[i - 29] for i in pc2_schedule[24:])
-    round_key_digits = [*first_half_digits, *second_half_digits]
-    return unbinlify(round_key_digits)
+    first_half_digits = (c_register[i - 1] for i in pc2_schedule[:24])
+    second_half_digits = (d_register[i - 29] for i in pc2_schedule[24:])
+    round_key_digits = itertools.chain(first_half_digits, second_half_digits)
+    return bitarray(round_key_digits)
 
 
-def des_key_schedule(key: int) -> Generator[int]:
+def des_key_schedule(key: bitarray) -> Generator[bitarray]:
+    assert len(key) == 64
+    c_register: bitarray
+    d_register: bitarray
     c_register, d_register = permuted_choice_1(key)
 
-    def get_v(round_index: int) -> int:
-        if round_index in {1, 2, 9, 16}: return 1
+    def get_v(round_number: int) -> int:
+        if round_number in {1, 2, 9, 16}: return 1
         return 2
 
-    for round_index in range(1, 17):
-        v = get_v(round_index)
-        c_register = circular_left_shift(c_register, v, 28)
-        d_register = circular_left_shift(d_register, v, 28)
+    for round_number in range(1, 17):
+        v = get_v(round_number)
+        c_register = circular_left_shift(c_register, v)
+        d_register = circular_left_shift(d_register, v)
         round_key = permuted_choice_2(c_register, d_register)
         yield round_key
 
