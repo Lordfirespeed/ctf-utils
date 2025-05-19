@@ -1,35 +1,37 @@
-from extras.binary_extras import binlify, unbinlify
+from bitarray import bitarray
+from bitarray.util import ba2int, int2ba
 
 from toy_cryptography.feistel_cipher.scheme import *
 
 
-def feistel_function(text: int, key: int) -> int:
-    text_digits = binlify(text, 4)
-    key_digits = binlify(key, 4)
-
+def feistel_function(text: bitarray, key: bitarray) -> bitarray:
     digits = [
-        ((text_digits[0] + key_digits[0]) % 2) * key_digits[1],
-        ((text_digits[1] + key_digits[1]) % 2) * key_digits[2],
-        ((text_digits[2] + key_digits[2]) % 2) * key_digits[3],
-        ((text_digits[3] + key_digits[3]) % 2) * key_digits[0],
+        ((text[0] + key[0]) % 2) * key[1],
+        ((text[1] + key[1]) % 2) * key[2],
+        ((text[2] + key[2]) % 2) * key[3],
+        ((text[3] + key[3]) % 2) * key[0],
     ]
-    return unbinlify(digits)
+    return bitarray(digits)
 
 
 def main():
     plaintext = FeistelText(
-        left=0b0111,
-        right=0b0001,
-        half_length=4,
+        left=int2ba(0b0111, length=4),
+        right=int2ba(0b0001, length=4),
     )
-    print(f"{ plaintext.value = :08b}")
+    print(f"{plaintext.value_int = :08b}")
 
-    ciphertext = encrypt(plaintext, [0b0101, 0b1101], feistel_function)
-    print(f"{ciphertext.value = :08b}")
+    round_keys = [
+        int2ba(0b0101, length=4),
+        int2ba(0b1101, length=4),
+    ]
 
-    round_trip = decrypt(ciphertext, [0b0101, 0b1101], feistel_function)
-    print(f"{round_trip.value = :08b}")
-    assert plaintext.value == round_trip.value
+    ciphertext = encrypt(plaintext, round_keys, feistel_function)
+    print(f"{ciphertext.value_int = :08b}")
+
+    round_trip = decrypt(ciphertext, round_keys, feistel_function)
+    print(f"{round_trip.value_int = :08b}")
+    assert plaintext.value_bits == round_trip.value_bits
 
 
 if __name__ == "__main__":
