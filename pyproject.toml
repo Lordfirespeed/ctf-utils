@@ -6,6 +6,7 @@ requires-python = ">=3.13"
 dependencies = [
     "aiohttp>=3.11.13",
     "bidict>=0.23.1",
+    "bitarray>=3.4.1",
     "cryptography>=44.0.2",
     "gmpy2>=2.2.1",
     "numpy>=2.2.3",
