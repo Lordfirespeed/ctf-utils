@@ -47,6 +47,7 @@ class AffineFunction:
 
     def evaluate(self, input: bitarray) -> bool:
         assert len(input) == len(self.bit_mask)
+        # XOR-ing a big sequence of bits together is equivalent to counting 1s mod 2
         true_count = (input & self.bit_mask).count(1) + self.negated
         return bool(true_count % 2)
 
