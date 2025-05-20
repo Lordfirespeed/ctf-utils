@@ -8,6 +8,11 @@ from toy_cryptography.dh.params import DiffieHellmanParams
 
 
 def load_pem_dh_parameters(parameters_file: Path) -> DiffieHellmanParams:
+    """
+    ```bash
+    openssl genpkey -genparam -algorithm dh -out dhparams.pem
+    ```
+    """
     with open(parameters_file, "rb") as parameters_file_handle:
         data = parameters_file_handle.read()
     parsed_parameters = parse_pem_parameters(data)
