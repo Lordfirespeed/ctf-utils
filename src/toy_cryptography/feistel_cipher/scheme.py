@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Callable, Sequence
 
-from bitarray import bitarray
-from bitarray.util import ba2int, int2ba
+from bitarray import frozenbitarray, bitarray
+from bitarray.util import ba2int
 
 
 type FeistelFunction = Callable[[bitarray, bitarray], bitarray]
@@ -10,18 +10,22 @@ type FeistelFunction = Callable[[bitarray, bitarray], bitarray]
 
 @dataclass(frozen=True)
 class FeistelText:
-    left: bitarray
-    right: bitarray
+    left: frozenbitarray
+    right: frozenbitarray
 
     def __post_init__(self):
         assert len(self.left) == len(self.right)
+        if isinstance(self.left, bitarray):
+            object.__setattr__(self, "left", frozenbitarray(self.left))
+        if isinstance(self.right, bitarray):
+            object.__setattr__(self, "right", frozenbitarray(self.right))
 
     @property
     def half_length(self):
         return len(self.left)
 
     @property
-    def value_bits(self) -> bitarray:
+    def value_bits(self) -> frozenbitarray:
         return self.left + self.right
 
     @property
