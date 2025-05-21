@@ -1,6 +1,9 @@
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
 from math import lcm
+from typing import Generator
+
+from extras.math_extras.mod_sqrt import mod_sqrt
 
 
 class PointABC(metaclass=ABCMeta):
@@ -63,6 +66,16 @@ class Curve:
     p: int  # prime field order and modulus for operations
     a: int  # coefficient in Weierstrass equation
     b: int  # coefficient in Weierstrass equation
+
+    def all_affine_points_by_exhaustion(self) -> Generator[AffinePointABC]:
+        yield AffinePointAtInfinity
+        for x in range(self.p):
+            yy = (pow(x, 3, mod=self.p) + (self.a * x) + self.b) % self.p
+            y = mod_sqrt(yy, self.p)
+            if y == 0:
+                continue
+            yield AffinePoint(x, y)
+            yield AffinePoint(x, self.p - y)
 
     def to_jacobian(self, affine: AffinePointABC) -> JacobianPointABC:
         if affine.is_at_infinity():
