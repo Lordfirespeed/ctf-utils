@@ -29,6 +29,9 @@ class AffinePoint(AffinePointABC):
     def is_at_infinity(self) -> bool:
         return False
 
+    def __str__(self):
+        return f"({self.x}, {self.y})"
+
 
 @dataclass(frozen=True)
 class AffinePointAtInfinityType(AffinePointABC):
@@ -39,6 +42,9 @@ class AffinePointAtInfinityType(AffinePointABC):
 
     def __repr__(self):
         return "AffinePointAtInfinity"
+
+    def __str__(self):
+        return "inf"
 
 
 AffinePointAtInfinity = AffinePointAtInfinityType()
@@ -54,6 +60,9 @@ class JacobianPoint(JacobianPointABC):
 
     def is_at_infinity(self) -> bool:
         return self.z == 0
+
+    def __str__(self):
+        return f"({self.x}, {self.y})"
 
 
 type Point = AffinePointABC | JacobianPointABC
