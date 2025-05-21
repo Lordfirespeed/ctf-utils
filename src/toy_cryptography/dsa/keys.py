@@ -32,8 +32,7 @@ class DSAPrivateKey:
         )
 
 
-def gen_private_key(params: DSAParams) -> DSAPrivateKey:
-    private = randrange(2, params.q)
+def determine_private_key(params: DSAParams, private: int) -> DSAPrivateKey:
     public = pow(params.g, private, mod=params.p)
     return DSAPrivateKey(
         private,
@@ -42,4 +41,9 @@ def gen_private_key(params: DSAParams) -> DSAPrivateKey:
     )
 
 
-__all__ = ("DSAPublicKey", "DSAPrivateKey", "gen_private_key",)
+def gen_private_key(params: DSAParams) -> DSAPrivateKey:
+    private = randrange(2, params.q)
+    return determine_private_key(params, private)
+
+
+__all__ = ("DSAPublicKey", "DSAPrivateKey", "determine_private_key", "gen_private_key",)
