@@ -30,6 +30,11 @@ word_lists_metadata_list = [
         url = URL("https://raw.githubusercontent.com/bitcoin/bips/refs/heads/master/bip-0039/english.txt"),
         filename = "bip-39-en.txt",
     ),
+    WordListMetadata(
+        slug = "english-words",
+        url = URL("https://raw.githubusercontent.com/dwyl/english-words/refs/heads/master/words_alpha.txt"),
+        filename = "english-words.txt"
+    )
 ]
 word_lists_metadata_dict: dict[str, WordListMetadata] = dict(((meta.slug, meta) for meta in word_lists_metadata_list))
 
