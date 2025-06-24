@@ -3,6 +3,8 @@ import csv
 import itertools
 from typing import NewType
 
+import aiocsv
+import aiofiles
 from gmpy2 import mpq
 
 from definitions import project_cache_dirname
@@ -69,10 +71,10 @@ async def main():
     words = [combination for combination in letter_combinations if combination in potential_words]
     words.sort(key=bigram_plausibility, reverse=True)
 
-    with open(project_cache_dirname/"alphabetical-combination-lock-crack-results.txt", "w", newline="") as results_handle:
-        results_writer = csv.writer(results_handle, quoting=csv.QUOTE_NONE)
+    async with aiofiles.open(project_cache_dirname/"alphabetical-combination-lock-crack-results.txt", "w", newline="") as results_handle:
+        results_writer = aiocsv.AsyncWriter(results_handle, quoting=csv.QUOTE_NONE)
         for word in words:
-            results_writer.writerow((word,))
+            await results_writer.writerow((word,))
 
 
 if __name__ == "__main__":
