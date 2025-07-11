@@ -1,20 +1,13 @@
 import dataclasses
 import itertools
-from string import ascii_lowercase
 from operator import add as op_add, sub as op_sub, mul as op_mul
+from fractions import Fraction
 from typing import Callable, Sequence
-
-
-def op_div(a: int, b: int) -> int:
-    result, remainder = divmod(a, b)
-    if remainder != 0:
-        raise ValueError
-    return result
 
 
 @dataclasses.dataclass(frozen=True)
 class Operator:
-    apply: Callable[[int, int], int]
+    apply: Callable[[int | Fraction, int], int | Fraction]
     symbol: str
 
     def __repr__(self):
@@ -24,10 +17,10 @@ class Operator:
 add = Operator(op_add, "+")
 sub = Operator(op_sub, "-")
 mul = Operator(op_mul, "*")
-div = Operator(op_div, "/")
+div = Operator(Fraction, "/")
 
 
-def evaluate_expression(operands: Sequence[int], operators: Sequence[Operator]) -> int:
+def evaluate_expression(operands: Sequence[int | Fraction], operators: Sequence[Operator]) -> int | Fraction:
     assert len(operands) == len(operators)
     accumulator = 0
     for operand, operator in zip(operands, operators):
@@ -35,7 +28,7 @@ def evaluate_expression(operands: Sequence[int], operators: Sequence[Operator]) 
     return accumulator
 
 
-def format_expression(operands: Sequence[int], operators: Sequence[Operator]) -> str:
+def format_expression(operands: Sequence[int | Fraction], operators: Sequence[Operator]) -> str:
     assert len(operands) == len(operators)
     return ", ".join(f"{operator} {operand}" for operand, operator in zip(operands, operators))
 
@@ -51,17 +44,14 @@ def numeric_core(numbers: Sequence[int], verbose=False) -> int:
 
     for rest_operations in itertools.permutations(remaining_operator_choices):
         operations = (*fixed_operations, *rest_operations)
-        try:
-            result = evaluate_expression(numbers, operations)
-        except ValueError:
-            result = None
-
+        result = evaluate_expression(numbers, operations)
         if verbose:
             print(f"{format_expression(numbers, operations)} -> {result}")
-
-        if result is None or result < 0:
+        if result < 0:
             continue
         if smallest_whole_number is not None and result > smallest_whole_number:
+            continue
+        if not Fraction.is_integer(result):
             continue
         smallest_whole_number = int(result)
 
