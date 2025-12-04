@@ -96,7 +96,7 @@ class DESTestVectors(unittest.TestCase):
     """
 
     def _test_with_vectors(self, vectors: Sequence[tuple[int, int, int]]):
-        for key_int, plaintext_int, expected_ciphertext_int in self.ip_and_e_test_vectors:
+        for key_int, plaintext_int, expected_ciphertext_int in vectors:
             key = int2ba(key_int, length=64)
             plaintext = int2ba(plaintext_int, length=64)
             expected_ciphertext = int2ba(expected_ciphertext_int, length=64)
