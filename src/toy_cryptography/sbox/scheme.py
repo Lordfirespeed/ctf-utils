@@ -7,6 +7,7 @@ from toy_cryptography.sbox.key_schedule import sbox_key_schedule
 
 
 def encrypt(plaintext: bitarray, key: bitarray) -> bitarray:
+    assert len(plaintext) == 64
     round_keys = list(sbox_key_schedule(key))
     left = plaintext[0:32]
     right = plaintext[32:64]
@@ -16,6 +17,7 @@ def encrypt(plaintext: bitarray, key: bitarray) -> bitarray:
 
 
 def decrypt(ciphertext: bitarray, key: bitarray) -> bitarray:
+    assert len(ciphertext) == 64
     round_keys = list(sbox_key_schedule(key))
     left = ciphertext[0:32]
     right = ciphertext[32:64]
