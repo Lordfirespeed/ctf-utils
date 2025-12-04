@@ -1,5 +1,5 @@
 from bitarray import bitarray
-from bitarray.util import int2ba, ba2int
+from bitarray.util import int2ba, ba2int, ba2hex
 
 from toy_cryptography import feistel_cipher
 from toy_cryptography.sbox.feistel_function import sbox_feistel_function
@@ -27,7 +27,9 @@ def decrypt(ciphertext: bitarray, key: bitarray) -> bitarray:
 
 
 if __name__ == "__main__":
-    key = int2ba(0x0000000000000000, length=64)
-    plaintext = int2ba(0x0123456789abcdef, length=64)
+    key = int2ba(0x0123456789abcdef, length=64)
+    plaintext = int2ba(0x00000000ffffffff, length=64)
     ciphertext = encrypt(plaintext, key)
-    print(hex(ba2int(ciphertext)))
+    print(ba2hex(ciphertext))
+    round_trip_plaintext = decrypt(ciphertext, key)
+    print(ba2hex(round_trip_plaintext))
