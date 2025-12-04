@@ -15,6 +15,15 @@ def encrypt(plaintext: bitarray, key: bitarray) -> bitarray:
     return encrypted.left + encrypted.right
 
 
+def decrypt(ciphertext: bitarray, key: bitarray) -> bitarray:
+    round_keys = list(sbox_key_schedule(key))
+    left = ciphertext[0:32]
+    right = ciphertext[32:64]
+    text = feistel_cipher.FeistelText(left, right)
+    decrypted = feistel_cipher.decrypt(text, round_keys, sbox_feistel_function)
+    return decrypted.left + decrypted.right
+
+
 if __name__ == "__main__":
     key = int2ba(0x0000000000000000, length=64)
     plaintext = int2ba(0x0123456789abcdef, length=64)
